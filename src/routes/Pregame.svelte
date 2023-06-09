@@ -5,6 +5,7 @@
 	import { get, getDatabase, ref, set } from 'firebase/database';
 	import type { JoinRequestBody } from '$lib/game';
 	import { gameId, user } from '$lib/stores';
+	import Section from '../components/Section.svelte';
 
 	let gameIDInput = '';
 	let desiredUsername = '';
@@ -59,7 +60,7 @@
 	}
 </script>
 
-<div class="w-full">
+<Section>
 	<h1 class="font-bold text-2xl mb-8">Pre-game</h1>
 	<div class="space-y-16">
 		<div>
@@ -75,4 +76,4 @@
 			</div>
 		</div>
 	</div>
-</div>
+</Section>

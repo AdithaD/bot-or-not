@@ -1,5 +1,6 @@
 import { getDatabase } from 'firebase/database';
 import { initializeApp } from 'firebase/app';
+import { browserSessionPersistence, getAuth, signInAnonymously } from 'firebase/auth';
 
 const firebaseConfig = {
 	apiKey: 'AIzaSyC7FQm-4qWD5V5xj5CxKMU90Cm42nwetRw',
@@ -13,6 +14,9 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
+const auth = getAuth(app);
+auth.setPersistence(browserSessionPersistence);
+signInAnonymously(auth);
 
 export const ssr = false;
 
