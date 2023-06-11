@@ -6,7 +6,7 @@
 
 <button
 	class="{expandh ? 'h-full' : ''} p-2 w-full font-bold text-white rounded-xl shadow-md {!disabled
-		? 'bg-primary over:translate-y-0.5 transition-transform'
+		? 'bg-primary hover:translate-y-0.5 transition-transform'
 		: 'bg-primarylight'}"
 	on:click={click}
 	{disabled}

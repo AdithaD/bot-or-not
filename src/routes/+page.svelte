@@ -1,4 +1,5 @@
 <script>
+	import Chat from './Chat.svelte';
 	import Lobby from './Lobby.svelte';
 	import Pregame from './Pregame.svelte';
 	import Prompt from './Prompt.svelte';
@@ -12,5 +13,6 @@
 		<Pregame />
 		<Lobby />
 		<Prompt />
+		<Chat />
 	</main>
 </div>
