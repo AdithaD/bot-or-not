@@ -14,7 +14,7 @@
 	try {
 		onValue(chatRef, (snapshot) => {
 			let data = snapshot.val() as Messages;
-			messages = Object.values(data || {});
+			messages = Object.values(data ?? {});
 		});
 	} catch (error) {
 		console.error(error);

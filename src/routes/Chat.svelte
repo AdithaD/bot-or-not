@@ -43,7 +43,7 @@
 			{#each targets as target}
 				<div class="space-y-2">
 					<FirebaseChatBox
-						refPath={`games/${$gameId}/publicState/chat/chats/${$user?.uid}/${target}`}
+						refPath={`games/${$gameId}/publicState/chat/chats/${$user?.uid}/${target}/messages`}
 						username={$users?.[target]?.username ?? ''}
 					/>
 					<ToggleButton>Bot?</ToggleButton>

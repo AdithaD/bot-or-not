@@ -85,7 +85,9 @@ async function moveToChat(game: Game, database: Database) {
 		}
 
 		let chats: TargetedObject<Chat> = {};
-		for (let uid in Object.keys(game.users)) {
+		console.log(JSON.stringify(game.users));
+		for (let uid in game.users) {
+			console.log(uid);
 			Object.keys(game.users)
 				.filter((user) => user != uid)
 				.forEach((user) => {
