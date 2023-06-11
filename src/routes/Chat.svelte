@@ -1,12 +1,12 @@
 <script lang="ts">
 	import ToggleButton from '../components/ToggleButton.svelte';
 
-	import type { ChatData, Messages } from '$lib/game';
+	import type { ChatData } from '$lib/game';
 	import { gameId, phase, user, users } from '$lib/stores';
 	import { getDatabase, onValue, ref } from 'firebase/database';
+	import { onDestroy } from 'svelte';
 	import FirebaseChatBox from '../components/FirebaseChatBox.svelte';
 	import Section from '../components/Section.svelte';
-	import { onDestroy } from 'svelte';
 
 	let chatData: ChatData | null = null;
 

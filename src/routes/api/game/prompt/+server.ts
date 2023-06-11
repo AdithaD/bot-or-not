@@ -1,10 +1,4 @@
-import {
-	amountOfPromptsPerPlayer,
-	type EnumeratedObject,
-	type Game,
-	type Prompt,
-	type TargetedObject
-} from '$lib/game';
+import { amountOfPromptsPerPlayer, type EnumeratedObject, type TargetedObject } from '$lib/game';
 import { json } from '@sveltejs/kit';
 import { getAuth } from 'firebase-admin/auth';
 import { getDatabase } from 'firebase-admin/database';

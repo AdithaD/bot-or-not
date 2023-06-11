@@ -84,6 +84,7 @@ async function moveToChat(game: Game, database: Database) {
 			return json({ error: 'Not enough prompts' }, { status: 403 });
 		}
 
+		// Create one-way chats.
 		let chats: TargetedObject<Chat> = {};
 		console.log(JSON.stringify(game.users));
 		for (let uid in game.users) {
@@ -99,6 +100,9 @@ async function moveToChat(game: Game, database: Database) {
 				});
 		}
 
+		// Create chat bridges...
+
+		// Update database
 		const updates: { [ref: string]: any } = {};
 
 		updates[`games/${game.id}/publicState/chat/chats`] = chats;

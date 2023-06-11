@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { gameId, user, users, isOwner, phase } from '$lib/stores';
-	import Button from '../components/Button.svelte';
-	import Border from '../components/Border.svelte';
-	import Section from '../components/Section.svelte';
-	import { getDatabase, onValue, ref, set } from 'firebase/database';
 	import type { PromptData } from '$lib/game';
+	import { gameId, isOwner, phase, user, users } from '$lib/stores';
 	import { getAuth } from 'firebase/auth';
-	import { onDestroy, onMount } from 'svelte';
+	import { getDatabase, onValue, ref } from 'firebase/database';
+	import { onDestroy } from 'svelte';
+	import Border from '../components/Border.svelte';
+	import Button from '../components/Button.svelte';
+	import Section from '../components/Section.svelte';
 
 	let unsubscribe: Function | null = null;
 	let storeUnsubscribe: Function | null = null;
