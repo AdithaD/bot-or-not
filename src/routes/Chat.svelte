@@ -7,6 +7,7 @@
 	import { onDestroy } from 'svelte';
 	import FirebaseChatBox from '../components/FirebaseChatBox.svelte';
 	import Section from '../components/Section.svelte';
+	import PhasedContent from '../components/PhasedContent.svelte';
 
 	let chatData: ChatData | null = null;
 
@@ -38,8 +39,8 @@
 
 <Section>
 	<h1 class="font-bold text-2xl mb-8">Chat 💬 🤖/🕴</h1>
-	{#if $phase == 'chat' || true}
-		<div class="space-y-8 overflow-y-auto flex-grow">
+	<PhasedContent phase="chat">
+		<div class="space-y-6 overflow-y-auto flex-grow pb-2">
 			{#each targets as target}
 				<div class="space-y-2">
 					<FirebaseChatBox
@@ -50,5 +51,5 @@
 				</div>
 			{/each}
 		</div>
-	{/if}
+	</PhasedContent>
 </Section>

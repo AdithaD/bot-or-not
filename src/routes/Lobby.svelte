@@ -10,6 +10,7 @@
 	import Section from '../components/Section.svelte';
 	import type { LobbyData } from '$lib/game';
 	import { onDestroy } from 'svelte';
+	import PhasedContent from '../components/PhasedContent.svelte';
 
 	let lobby: LobbyData | null = null;
 
@@ -62,8 +63,7 @@
 
 		<h1 class="text-md mb-8 text-gray-500">#{$gameId || 'Not connected'}</h1>
 	</div>
-
-	{#if $phase === 'lobby'}
+	<PhasedContent phase="lobby">
 		<div>
 			<h2 class="font-bold text-xl">Connected Players</h2>
 			<div class="h-40">
@@ -78,5 +78,5 @@
 		{#if $isOwner}
 			<div><Button click={startGame}>Start Game</Button></div>
 		{/if}
-	{/if}
+	</PhasedContent>
 </Section>

@@ -10,7 +10,7 @@
 <div
 	class="block p-2 {disabled || confirmed ? 'bg-primarylight' : ''} {checked
 		? `bg-primary ${toggledColour}`
-		: 'bg-primary'}hover:translate-y-0.5 transition-[transform,colors] text-white font-bold rounded-xl text-center"
+		: 'bg-primary'} hover:translate-y-0.5 transition-[transform,colors] text-white font-bold rounded-xl text-center"
 	on:click={() => {
 		if (!disabled && !confirmed) checked = !checked;
 	}}

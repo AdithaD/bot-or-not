@@ -1,10 +1,11 @@
 <script lang="ts">
-	import { users, user, gameId } from '$lib/stores';
+	import { users, user, gameId, phase } from '$lib/stores';
 	import { get, getDatabase, ref } from 'firebase/database';
 	import Section from '../components/Section.svelte';
 	import ToggleButton from '../components/ToggleButton.svelte';
 	import Button from '../components/Button.svelte';
 	import { getAuth } from 'firebase/auth';
+	import PhasedContent from '../components/PhasedContent.svelte';
 
 	let amountOfPlayers = 0;
 	get(ref(getDatabase(), `games/${$gameId}/publicState/chatsPerPlayer`)).then((snapshot) => {
@@ -43,27 +44,30 @@
 
 <Section>
 	<h1 class="font-bold text-2xl mb-8">Select 🤔</h1>
-	<div class="space-y-16">
-		<div class="font-bold text-xl">Select {amountOfPlayers} players 😉 to chat to:</div>
-		<div class=" space-y-4">
-			{#if $users}
-				{#each Object.keys($users).filter((uid) => uid != $user?.uid) as target}
-					<ToggleButton
-						toggledColour="bg-green-700"
-						bind:checked={buttons[target]}
-						disabled={amountOfCheckedButtons >= amountOfPlayers && !buttons[target]}
-						confirmed={selected}
-					>
-						{$users[target].username}
-					</ToggleButton>
-				{/each}
-			{/if}
+	<PhasedContent phase="select">
+		<div class="space-y-16">
+			<div class="font-bold text-xl">Select {amountOfPlayers} players 😉 to chat to:</div>
+			<div class=" space-y-4">
+				{#if $users}
+					{#each Object.keys($users).filter((uid) => uid != $user?.uid) as target}
+						<ToggleButton
+							toggledColour="bg-green-700"
+							bind:checked={buttons[target]}
+							disabled={amountOfCheckedButtons >= amountOfPlayers && !buttons[target]}
+							confirmed={selected}
+						>
+							{$users[target].username}
+						</ToggleButton>
+					{/each}
+				{/if}
+			</div>
 		</div>
-	</div>
-	<div class="flex-grow" />
-	<div>
-		<Button click={sendSelections} disabled={amountOfCheckedButtons != amountOfPlayers || selected}
-			>Send</Button
-		>
-	</div>
+		<div class="flex-grow" />
+		<div>
+			<Button
+				click={sendSelections}
+				disabled={amountOfCheckedButtons != amountOfPlayers || selected}>Send</Button
+			>
+		</div>
+	</PhasedContent>
 </Section>

@@ -1,3 +1,4 @@
+import { moveToChat } from '$lib/server/game.js';
 import { json } from '@sveltejs/kit';
 import { getAuth } from 'firebase-admin/auth';
 import { getDatabase } from 'firebase-admin/database';
@@ -43,6 +44,8 @@ export async function POST({ request }) {
 	let users = (await database.ref(`games/${gameId}/users`).get()).val();
 
 	if (selected != null && Object.keys(selected).length == Object.keys(users).length) {
+		var game = (await database.ref(`games/${gameId}`).get()).val();
+		moveToChat(game, database);
 	}
 
 	return json({}, { status: 200 });

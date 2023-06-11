@@ -36,6 +36,9 @@ export async function POST({ request }): Promise<Response> {
 		case 'prompt':
 			await moveToPrompt(game, database);
 			break;
+		case 'select':
+			await database.ref(`games/${gameId}/publicState/phase`).set('select');
+			break;
 		case 'chat':
 			await moveToChat(game, database);
 			break;

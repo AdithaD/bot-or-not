@@ -7,6 +7,7 @@
 	import Border from '../components/Border.svelte';
 	import Button from '../components/Button.svelte';
 	import Section from '../components/Section.svelte';
+	import PhasedContent from '../components/PhasedContent.svelte';
 
 	let unsubscribe: Function | null = null;
 	let storeUnsubscribe: Function | null = null;
@@ -50,7 +51,7 @@
 			method: 'POST',
 			body: JSON.stringify({
 				gameId: $gameId,
-				phase: 'chat'
+				phase: 'select'
 			}),
 			headers: {
 				Authorization: 'Bearer ' + (await getAuth().currentUser?.getIdToken(true))
@@ -111,27 +112,29 @@
 
 <Section>
 	<h1 class="font-bold text-2xl mb-8">Prompt 💭</h1>
-	{#if $phase == 'prompt' && $user}
-		<div class="font-bold text-xl">Describe the following players:</div>
-		<div class="space-y-8 overflow-y-auto flex-grow">
-			{#each Object.keys(descriptions) as target}
-				<div>
-					<h2 class="font-bold mb-2">{$users?.[target].username || 'User'}:</h2>
-					<div class="space-y-4">
-						<Border>
-							<textarea class="w-full p-4 rounded-lg" bind:value={descriptions[target]} />
-						</Border>
+	<PhasedContent phase="prompt">
+		{#if $user}
+			<div class="font-bold text-xl">Describe the following players:</div>
+			<div class="space-y-8 overflow-y-auto flex-grow">
+				{#each Object.keys(descriptions) as target}
+					<div>
+						<h2 class="font-bold mb-2">{$users?.[target].username || 'User'}:</h2>
+						<div class="space-y-4">
+							<Border>
+								<textarea class="w-full p-4 rounded-lg" bind:value={descriptions[target]} />
+							</Border>
+						</div>
 					</div>
-				</div>
-			{/each}
-		</div>
-		<div>
-			<Button click={submit} disabled={submitted}>Submit</Button>
-		</div>
-		<div>
-			{#if $isOwner}
-				<Button click={nextPhase} disabled={!allSubmitted}>Next Phase</Button>
-			{/if}
-		</div>
-	{/if}
+				{/each}
+			</div>
+			<div>
+				<Button click={submit} disabled={submitted}>Submit</Button>
+			</div>
+			<div>
+				{#if $isOwner}
+					<Button click={nextPhase} disabled={!allSubmitted}>Next Phase</Button>
+				{/if}
+			</div>
+		{/if}
+	</PhasedContent>
 </Section>

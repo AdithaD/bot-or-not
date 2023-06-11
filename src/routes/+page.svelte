@@ -3,6 +3,7 @@
 	import Lobby from './Lobby.svelte';
 	import Pregame from './Pregame.svelte';
 	import Prompt from './Prompt.svelte';
+	import Reveal from './Reveal.svelte';
 	import Select from './Select.svelte';
 </script>
 
@@ -16,5 +17,6 @@
 		<Prompt />
 		<Select />
 		<Chat />
+		<Reveal />
 	</main>
 </div>
