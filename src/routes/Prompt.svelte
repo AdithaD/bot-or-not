@@ -18,6 +18,7 @@
 		unsubscribe = onValue(ref(getDatabase(), `games/${gameId}/publicState/prompt`), (snapshot) => {
 			prompt = snapshot.val();
 			console.log(`game: ${gameId} prompt: ${JSON.stringify(prompt)}}`);
+			loadDescriptions();
 		});
 	});
 
@@ -86,10 +87,12 @@
 								});
 							});
 						} else {
+							console.log('not set. not ok');
 							descriptions = {};
 						}
 					})
 					.catch((e) => {
+						console.log('not set. err');
 						descriptions = {};
 					});
 			})
@@ -107,7 +110,7 @@
 </script>
 
 <Section>
-	<h1 class="font-bold text-2xl mb-8">Prompt</h1>
+	<h1 class="font-bold text-2xl mb-8">Prompt 💭</h1>
 	{#if $phase == 'prompt' && $user}
 		<div class="font-bold text-xl">Describe the following players:</div>
 		<div class="space-y-8 overflow-y-auto flex-grow">

@@ -58,7 +58,7 @@
 
 <Section>
 	<div>
-		<h1 class="font-bold text-2xl mb-2">Lobby</h1>
+		<h1 class="font-bold text-2xl mb-2">Lobby 🛋</h1>
 
 		<h1 class="text-md mb-8 text-gray-500">#{$gameId || 'Not connected'}</h1>
 	</div>

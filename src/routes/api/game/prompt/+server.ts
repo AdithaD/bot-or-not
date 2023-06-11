@@ -1,4 +1,5 @@
-import { amountOfPromptsPerPlayer, type EnumeratedObject, type TargetedObject } from '$lib/game';
+import type { EnumeratedObject, TargetedObject } from '$lib/game';
+import { amountOfPromptsPerPlayer } from '$lib/server/game';
 import { json } from '@sveltejs/kit';
 import { getAuth } from 'firebase-admin/auth';
 import { getDatabase } from 'firebase-admin/database';
@@ -39,6 +40,7 @@ export async function GET({ request, url }): Promise<Response> {
 		return json({ error: 'Internal server error' }, { status: 500 });
 	}
 }
+
 export async function POST({ request }) {
 	let { gameId, prompts } = (await request.json()) as {
 		gameId: string;

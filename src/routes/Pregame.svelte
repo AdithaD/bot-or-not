@@ -61,7 +61,7 @@
 </script>
 
 <Section>
-	<h1 class="font-bold text-2xl mb-8">Pre-game</h1>
+	<h1 class="font-bold text-2xl mb-8">Pre-game 🎮</h1>
 	<div class="space-y-16">
 		<div>
 			<h2 class="font-bold text-xl mb-4">Username</h2>

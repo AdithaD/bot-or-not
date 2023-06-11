@@ -37,7 +37,7 @@
 </script>
 
 <Section>
-	<h1 class="font-bold text-2xl mb-8">Chat</h1>
+	<h1 class="font-bold text-2xl mb-8">Chat 💬 🤖/🕴</h1>
 	{#if $phase == 'chat' || true}
 		<div class="space-y-8 overflow-y-auto flex-grow">
 			{#each targets as target}
