@@ -18,8 +18,6 @@ const auth = getAuth(app);
 auth.setPersistence(browserSessionPersistence);
 signInAnonymously(auth);
 
-export const ssr = false;
-
 export function load() {
 	return { database };
 }
