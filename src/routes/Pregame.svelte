@@ -40,9 +40,12 @@
 	async function joinGame() {
 		if (!gameIDInput) return;
 
-		if (!desiredUsername || desiredUsername.length < 1) return alert('Please enter a username');
+		validateUsername();
 
 		let creds = await signInAnonymously(getAuth());
+
+		if (gameIDInput.length < 1) return alert('Please enter a game ID');
+		if (gameIDInput.length != 36) return alert('Invalid game ID');
 
 		let body: JoinRequestBody = {
 			gameId: gameIDInput,
@@ -57,6 +60,11 @@
 			gameId.set(body.gameId);
 			user.set(body.user);
 		});
+	}
+
+	function validateUsername() {
+		if (!desiredUsername || desiredUsername.length < 1) return alert('Please enter a username');
+		if (desiredUsername.length > 20) return alert('Username must be less than 20 characters');
 	}
 </script>
 

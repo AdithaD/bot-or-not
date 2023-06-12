@@ -115,7 +115,6 @@
 						refPath={`games/${$gameId}/userState/${$user?.uid}/chats/${target}/messages`}
 						username={$users?.[target]?.username ?? ''}
 					/>
-					<div class="flex-grow" />
 					<div class="flex space-x-2">
 						<div class="w-full flex-grow">
 							<ToggleButton bind:checked={decisions[target]} disabled={disabled?.[target] ?? false}

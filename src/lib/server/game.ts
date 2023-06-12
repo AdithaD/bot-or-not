@@ -20,7 +20,7 @@ import { getDatabase, type Database, type Reference, ServerValue } from 'firebas
 import { onValue } from 'firebase/database';
 import type { ChatCompletionRequestMessage } from 'openai';
 
-const chatTime = 120;
+const chatTime = 90;
 
 export const amountOfPromptsPerPlayer = 2;
 const chatsPerPlayer: { [playerCount: number]: number } = {
@@ -31,6 +31,7 @@ const chatsPerPlayer: { [playerCount: number]: number } = {
 };
 
 const maxMessagesPerPlayerPerChat = 4;
+export const maxUsers = 6;
 
 const promptMessage = `The user and their good friends are playing a game online where they need to text each other and figure out if they are actually talking to each other or they are talking to an AI. You are the AI trying to deceive the user that you are the user's friend. The friend you are impersonating is described below in the brackets.
 
@@ -212,27 +213,31 @@ async function aiTurn(
 			messages: [systemMessage, ...previousChat],
 			max_tokens: 20
 		};
+		let content: string = '';
+		if (env.ACTIVE_AI && env.ACTIVE_AI == 'TRUE') {
+			try {
+				const completion = await (
+					await fetch('https://api.openai.com/v1/chat/completions', {
+						method: 'POST',
+						headers: {
+							Authorization: `Bearer ${env.OPENAI_API_KEY}`,
+							'Content-Type': 'application/json'
+						},
+						body: JSON.stringify(body)
+					})
+				).json();
 
-		try {
-			const completion = await (
-				await fetch('https://api.openai.com/v1/chat/completions', {
-					method: 'POST',
-					headers: {
-						Authorization: `Bearer ${env.OPENAI_API_KEY}`,
-						'Content-Type': 'application/json'
-					},
-					body: JSON.stringify(body)
-				})
-			).json();
+				content = completion.choices[0].message.content;
+				//const content = 'I am a chatbox';
 
-			let content = completion.choices[0].message.content;
-			//const content = 'I am a chatbox';
-
-			// Send message 💬
-			userChatRef.push({ uid: fakerId, content });
-		} catch (e) {
-			console.error(e);
+				// Send message 💬
+			} catch (e) {
+				console.error(e);
+			}
+		} else {
+			content = 'I am a chatbox';
 		}
+		userChatRef.push({ uid: fakerId, content });
 	}
 
 	if (messageNumber < maxMessagesPerPlayerPerChat) {
