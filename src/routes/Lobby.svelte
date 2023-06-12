@@ -1,45 +1,15 @@
 <script lang="ts">
-	import ChatBox from '../components/ChatBox.svelte';
-
 	import Border from '../components/Border.svelte';
 
-	import { gameId, user, users, isOwner, phase } from '$lib/stores';
-	import { getDatabase, ref, push, onValue } from 'firebase/database';
-	import Button from '../components/Button.svelte';
+	import { gameId, isOwner, user, users } from '$lib/stores';
 	import { getAuth } from 'firebase/auth';
-	import Section from '../components/Section.svelte';
-	import type { LobbyData } from '$lib/game';
-	import { onDestroy } from 'svelte';
-	import PhasedContent from '../components/PhasedContent.svelte';
+	import Button from '../components/Button.svelte';
 	import FirebaseChatBox from '../components/FirebaseChatBox.svelte';
-
-	let lobby: LobbyData | null = null;
-
-	let unsubscribe: Function | null = null;
-	let storeUnsubscribe: Function | null = null;
-	storeUnsubscribe = gameId.subscribe((gameId) => {
-		if (unsubscribe != null) unsubscribe();
-
-		unsubscribe = onValue(ref(getDatabase(), `games/${gameId}/publicState/lobby`), (snapshot) => {
-			lobby = snapshot.val();
-			console.log(`game: ${gameId} lobby: ${JSON.stringify(lobby)}}`);
-		});
-	});
+	import PhasedContent from '../components/PhasedContent.svelte';
+	import Section from '../components/Section.svelte';
 
 	$: _users = Object.values($users || {});
 
-	$: messages = Object.values(lobby?.messages || {});
-
-	function sendMessage(message: string) {
-		console.log(`sending message: ${message}`);
-		if (message.length > 0) {
-			push(ref(getDatabase(), `games/${$gameId}/publicState/lobby/messages`), {
-				uid: $user?.uid,
-				content: message,
-				username: $user?.username
-			});
-		}
-	}
 	async function startGame() {
 		fetch(`/api/game/start`, {
 			method: 'POST',
@@ -52,11 +22,6 @@
 			}
 		});
 	}
-
-	onDestroy(() => {
-		if (unsubscribe != null) unsubscribe();
-		if (storeUnsubscribe != null) storeUnsubscribe();
-	});
 </script>
 
 <Section>

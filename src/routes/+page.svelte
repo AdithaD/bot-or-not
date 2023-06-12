@@ -21,11 +21,19 @@
 			>
 		</div>
 	</header>
-	<main class="p-8 grid grid-cols-3 grid-rows-4 gap-8 w-full flex-grow">
-		<Pregame />
-		<Lobby />
-		<Prompt />
-		<Select />
+	<main class="p-8 lg:grid lg:grid-rows-4 lg:gap-8 w-full flex-grow space-y-8 lg:space-y-0">
+		<div class="">
+			<Pregame />
+		</div>
+		<div>
+			<Lobby />
+		</div>
+		<div>
+			<Prompt />
+		</div>
+		<div>
+			<Select />
+		</div>
 		<div class="col-span-2">
 			<Chat />
 		</div>

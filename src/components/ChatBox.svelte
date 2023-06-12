@@ -2,19 +2,24 @@
 	import type { Message } from '$lib/game';
 	import { users } from '$lib/stores';
 	import Border from './Border.svelte';
-
 	import Button from './Button.svelte';
 	import TextInput from './TextInput.svelte';
 
+	export const chatTimeout = 2000;
+
 	export let messages: Message[] = [];
-	let messageInput = '';
-
 	export let username = '';
-
 	export let sendMessageCb: (content: string) => void;
+	export let canSend = true;
+
+	let messageInput = '';
 
 	function sendMessage() {
 		sendMessageCb(messageInput);
+		canSend = false;
+		setTimeout(() => {
+			canSend = true;
+		}, chatTimeout);
 		messageInput = '';
 	}
 </script>
@@ -37,7 +42,7 @@
 			<TextInput bind:value={messageInput} placeholder="Enter message" />
 		</div>
 		<div class="h-full flex-grow">
-			<Button click={sendMessage}>Send</Button>
+			<Button disabled={!canSend} click={sendMessage}>Send</Button>
 		</div>
 	</div>
 </div>
