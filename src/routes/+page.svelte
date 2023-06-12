@@ -1,4 +1,6 @@
 <script>
+	import { initialiseFirebase } from '$lib/client';
+	import { onMount } from 'svelte';
 	import Button from '../components/Button.svelte';
 	import Chat from './Chat.svelte';
 	import Lobby from './Lobby.svelte';
@@ -6,6 +8,10 @@
 	import Prompt from './Prompt.svelte';
 	import Reveal from './Reveal.svelte';
 	import Select from './Select.svelte';
+
+	onMount(() => {
+		initialiseFirebase();
+	});
 </script>
 
 <div class="min-h-screen flex flex-col">
