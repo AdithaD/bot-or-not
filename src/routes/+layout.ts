@@ -1,5 +1,4 @@
 import { initialiseFirebase } from '$lib/client';
-
-initialiseFirebase();
+import '$lib/client';
 
 export const ssr = false;

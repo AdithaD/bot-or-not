@@ -21,3 +21,5 @@ export async function initialiseFirebase() {
 	auth.setPersistence(browserSessionPersistence);
 	signInAnonymously(auth);
 }
+
+initialiseFirebase();
