@@ -33,12 +33,12 @@ export async function POST({ request }) {
 				if (dbUser) {
 					return json({ gameId, dbUser, error: 'User already exists' }, { status: 409 });
 				} else {
-					userRef.set(user);
+					await userRef.set(user);
 					log.info(`GAME ${gameId}: USER ${user.uid} - ${user.username} joined.`);
 
 					if (!game.owner || game.owner == null) {
 						let ownerRef = database.ref(`games/${gameId}/owner`);
-						ownerRef.set(user.uid);
+						await ownerRef.set(user.uid);
 						log.info(`GAME ${gameId}: USER ${user.uid} - ${user.username} is the owner.`);
 					}
 				}

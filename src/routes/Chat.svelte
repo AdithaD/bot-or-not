@@ -108,7 +108,7 @@
 		<h1 class="font-bold text-2xl mb-8">{timeRemaining}</h1>
 	</div>
 	<PhasedContent phase="chat">
-		<div class="space-y-6 overflow-y-auto flex-grow pb-2">
+		<div class="lg:grid lg:grid-cols-2 space-y-6 overflow-y-auto flex-grow pb-2">
 			{#each targets as target}
 				<div class="space-y-2 flex flex-col h-full">
 					<FirebaseChatBox

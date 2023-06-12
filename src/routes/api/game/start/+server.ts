@@ -1,5 +1,5 @@
 import type { Game, Phase } from '$lib/game';
-import { moveToChat, moveToPrompt, moveToReveal } from '$lib/server/game';
+import { moveToChat, moveToPrompt, moveToReveal, moveToSelect } from '$lib/server/game';
 import { json } from '@sveltejs/kit';
 import { getAuth } from 'firebase-admin/auth';
 import { getDatabase } from 'firebase-admin/database';
@@ -34,11 +34,9 @@ export async function POST({ request }): Promise<Response> {
 
 	switch (phase) {
 		case 'prompt':
-			await moveToPrompt(game, database);
-			break;
+			return await moveToPrompt(game, database);
 		case 'select':
-			await database.ref(`games/${gameId}/publicState/phase`).set('select');
-			break;
+			return await moveToSelect(game, database);
 		case 'chat':
 			await moveToChat(game, database);
 			break;

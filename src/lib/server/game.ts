@@ -66,88 +66,90 @@ export async function moveToPrompt(game: Game, database: Database) {
 	);
 	updates[`games/${game.id}/publicState/phase`] = 'prompt';
 
-	await database.ref().update(updates);
-}
-
-export async function moveToChat(game: Game, database: Database) {
-	let prompts = (
-		await database.ref(`games/${game.id}/privateState/prompts`).get()
-	).val() as TargetedObject<string>;
-	if (prompts) {
-		// Validation
-		if (Object.values(prompts).some((target) => Object.values(target).length < 1)) {
-			return json({ error: 'Not enough prompts' }, { status: 403 });
-		}
-
-		// Create one-way chats.
-		// let chats: TargetedObject<Chat> = {};
-		// console.log(JSON.stringify(game.users));
-		// for (let uid in game.users) {
-		// console.log(uid);
-		// Object.keys(game.users)
-		// .filter((user) => user != uid)
-		// .forEach((user) => {
-		// if (!chats[uid]) chats[uid] = {};
-		// chats[uid][user] = {
-		// messages: {},
-		// decision: false
-		// };
-		// });
-		// }
-
-		let chats: TargetedObject<Chat> = {};
-
-		let selection = (
-			await database.ref(`games/${game.id}/privateState/chatSelection`).get()
-		).val() as ChatSelections;
-
-		let types: TargetedObject<ChatTypes> = {};
-
-		const updates: { [ref: string]: any } = {};
-
-		for (const uid in game.users) {
-			// Get all the users this user has selected to talk to
-			let chatTargets = Object.keys(selection[uid]).filter((target) => selection[uid][target]);
-
-			for (const target of chatTargets) {
-				if (!chats[uid]) chats[uid] = {};
-				chats[uid][target] = {
-					messages: {},
-					active: true
-				};
-
-				if (!types[uid]) types[uid] = {};
-				// Are they talking back? (P2P)
-				if (selection[target][uid]) {
-					createP2PChatBridge(uid, target);
-					types[uid][target] = 'P2P';
-				} else {
-					// Are they not talking back? (H2AI)
-					createP2AIChatBridge(uid, target);
-
-					types[uid][target] = 'P2AI';
-				}
-			}
-			updates[`games/${game.id}/userState/${uid}/chats`] = chats[uid];
-		}
-
-		updates[`games/${game.id}/privateState/chatTypes`] = types;
-		// Update database
-		updates[`games/${game.id}/publicState/phase`] = 'chat';
-
-		updates[`games/${game.id}/publicState/chat/timer`] = {
-			startAt: ServerValue.TIMESTAMP,
-			seconds: chatTime
-		};
-
-		// Auto reveal after time expires
-		database.ref(`games/${game.id}/publicState/chat/timer`).once('value', (snapshot) => {
-			setTimeout(() => moveToReveal(game, database), snapshot.val().seconds * 1000);
-		});
-
+	try {
 		await database.ref().update(updates);
-	} else {
-		return json({ error: 'No prompts' }, { status: 403 });
+	} catch (error) {
+		return json({ error: 'Failed to update database' }, { status: 500 });
+	}
+
+	return json({}, { status: 200 });
+}
+export async function moveToSelect(game: Game, database: Database) {
+	try {
+		await database.ref(`games/${game.id}/publicState/phase`).set('select');
+	} catch (error) {
+		return json({ error: 'Failed to update database' }, { status: 500 });
+	}
+	return json({}, { status: 200 });
+}
+export async function moveToChat(game: Game, database: Database) {
+	try {
+		let prompts = (
+			await database.ref(`games/${game.id}/privateState/prompts`).get()
+		).val() as TargetedObject<string>;
+
+		if (prompts) {
+			// Validation
+			if (Object.values(prompts).some((target) => Object.values(target).length < 1)) {
+				return json({ error: 'Not enough prompts' }, { status: 403 });
+			}
+
+			let chats: TargetedObject<Chat> = {};
+
+			let selection = (
+				await database.ref(`games/${game.id}/privateState/chatSelection`).get()
+			).val() as ChatSelections;
+
+			let types: TargetedObject<ChatTypes> = {};
+
+			const updates: { [ref: string]: any } = {};
+
+			for (const uid in game.users) {
+				// Get all the users this user has selected to talk to
+				let chatTargets = Object.keys(selection[uid]).filter((target) => selection[uid][target]);
+
+				for (const target of chatTargets) {
+					if (!chats[uid]) chats[uid] = {};
+					chats[uid][target] = {
+						messages: {},
+						active: true
+					};
+
+					if (!types[uid]) types[uid] = {};
+					// Are they talking back? (P2P)
+					if (selection[target][uid]) {
+						createP2PChatBridge(uid, target);
+						types[uid][target] = 'P2P';
+					} else {
+						// Are they not talking back? (H2AI)
+						createP2AIChatBridge(uid, target);
+
+						types[uid][target] = 'P2AI';
+					}
+				}
+				updates[`games/${game.id}/userState/${uid}/chats`] = chats[uid];
+			}
+
+			updates[`games/${game.id}/privateState/chatTypes`] = types;
+			// Update database
+			updates[`games/${game.id}/publicState/phase`] = 'chat';
+
+			updates[`games/${game.id}/publicState/chat/timer`] = {
+				startAt: ServerValue.TIMESTAMP,
+				seconds: chatTime
+			};
+
+			// Auto reveal after time expires
+			database.ref(`games/${game.id}/publicState/chat/timer`).once('value', (snapshot) => {
+				setTimeout(() => moveToReveal(game, database), snapshot.val().seconds * 1000);
+			});
+
+			await database.ref().update(updates);
+		} else {
+			return json({ error: 'No prompts' }, { status: 403 });
+		}
+	} catch (error) {
+		return json({ error: 'Failed to update database' }, { status: 500 });
 	}
 
 	function createP2PChatBridge(from: string, to: string) {
@@ -296,6 +298,7 @@ export async function moveToReveal(game: Game, database: Database) {
 	await database.ref().update(updates);
 }
 
+// TODO: Better allocation algorithm
 export function generateRandomAllocations(uids: string[]) {
 	let selections: string[] = [];
 	uids.forEach((uid) => {

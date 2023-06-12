@@ -50,7 +50,7 @@ export type PrivateGameState = {
 };
 
 export type UserGameState = {
-	chats: { [targetUid: string]: Messages };
+	chats: { [targetUid: string]: { messages: Messages } };
 };
 
 export type Message = { uid: string; content: string };

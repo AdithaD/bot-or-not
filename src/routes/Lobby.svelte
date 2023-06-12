@@ -27,8 +27,12 @@
 <Section>
 	<div>
 		<h1 class="font-bold text-2xl mb-2">Lobby 🛋</h1>
-
-		<h1 class="text-md mb-8 text-gray-500">#{$gameId || 'Not connected'}</h1>
+		<div class="flex">
+			<h1 class="text-md mb-8 text-gray-500 flex-grow">#{$gameId || 'Not connected'}</h1>
+			<div class="w-10 h-10">
+				<Button click={() => navigator.clipboard.writeText($gameId ?? '')}>📋</Button>
+			</div>
+		</div>
 	</div>
 	<PhasedContent phase="lobby">
 		<div class="flex flex-col w-full space-y-4">
