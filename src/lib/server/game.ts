@@ -273,7 +273,7 @@ export async function moveToReveal(game: Game, database: Database) {
 		for (const target of Object.keys(userState.chats)) {
 			const userTargetRevealData: UserTargetRevealData = {
 				messages: userState.chats[target],
-				decision: privateGameState.decisions[user.uid][target],
+				decision: privateGameState.decisions?.[user.uid]?.[target] ?? false,
 				truth: privateGameState.chatTypes[user.uid][target] == 'P2AI',
 				prompts: privateGameState.prompts[target]
 			};

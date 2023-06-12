@@ -1,5 +1,5 @@
 // Import the functions you need from the SDKs you need
-import * as admin from 'firebase-admin';
+import admin from 'firebase-admin';
 import admin_key from './../../../secrets/admin_key.json';
 var app = null;
 try {
