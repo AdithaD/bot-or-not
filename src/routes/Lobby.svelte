@@ -11,6 +11,7 @@
 	import type { LobbyData } from '$lib/game';
 	import { onDestroy } from 'svelte';
 	import PhasedContent from '../components/PhasedContent.svelte';
+	import FirebaseChatBox from '../components/FirebaseChatBox.svelte';
 
 	let lobby: LobbyData | null = null;
 
@@ -33,6 +34,7 @@
 		console.log(`sending message: ${message}`);
 		if (message.length > 0) {
 			push(ref(getDatabase(), `games/${$gameId}/publicState/lobby/messages`), {
+				uid: $user?.uid,
 				content: message,
 				username: $user?.username
 			});
@@ -64,19 +66,24 @@
 		<h1 class="text-md mb-8 text-gray-500">#{$gameId || 'Not connected'}</h1>
 	</div>
 	<PhasedContent phase="lobby">
-		<div>
-			<h2 class="font-bold text-xl">Connected Players</h2>
-			<div class="h-40">
-				<Border>
-					{#each _users as user}
-						<div class="p-2 font-bold">{user.username}</div>
-					{/each}
-				</Border>
+		<div class="flex flex-col w-full space-y-4">
+			<div>
+				<h2 class="font-bold text-xl">Connected Players</h2>
+				<div class="h-40">
+					<Border>
+						{#each _users as user}
+							<div class="p-2 font-bold">{user.username}</div>
+						{/each}
+					</Border>
+				</div>
 			</div>
+			<FirebaseChatBox
+				refPath={`games/${$gameId}/publicState/lobby/messages`}
+				username={$user?.username}
+			/>
+			{#if $isOwner}
+				<div><Button click={startGame}>Start Game</Button></div>
+			{/if}
 		</div>
-		<ChatBox {messages} sendMessageCb={sendMessage} />
-		{#if $isOwner}
-			<div><Button click={startGame}>Start Game</Button></div>
-		{/if}
 	</PhasedContent>
 </Section>

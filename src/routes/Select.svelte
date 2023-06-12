@@ -18,6 +18,18 @@
 		(snapshot) => (selected = snapshot.val() ?? false)
 	);
 
+	$: {
+		if ($phase == 'select') {
+			get(ref(getDatabase(), `games/${$gameId}/publicState/chatsPerPlayer`)).then((snapshot) => {
+				amountOfPlayers = snapshot.val() ?? 0;
+				console.log('amountOfPlayers: ', amountOfPlayers);
+			});
+			get(ref(getDatabase(), `games/${$gameId}/publicState/select/selected/${$user?.uid}`)).then(
+				(snapshot) => (selected = snapshot.val() ?? false)
+			);
+		}
+	}
+
 	let buttons: { [uid: string]: boolean } = {};
 	$: amountOfCheckedButtons = Object.values(buttons).filter((button) => button).length;
 

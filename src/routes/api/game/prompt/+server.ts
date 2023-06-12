@@ -23,10 +23,6 @@ export async function GET({ request, url }): Promise<Response> {
 			await getDatabase().ref(`games/${gameId}/privateState/prompts`).get()
 		).val() as TargetedObject<string>;
 
-		console.log(gameId);
-
-		console.log(JSON.stringify(prompts));
-
 		if (prompts == null) return json({}, { status: 200 });
 
 		let userPrompts: { [targetUid: string]: string } = {};

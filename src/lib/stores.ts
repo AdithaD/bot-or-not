@@ -25,6 +25,7 @@ if (browser) {
 				usFunc = onValue(
 					ref(getDatabase(), `games/${gameId}/users`),
 					(snapshot) => {
+						console.log(`users/${gameId} changed to ${JSON.stringify(snapshot.val())}`);
 						set(snapshot.val());
 					},
 					(error) => {

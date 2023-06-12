@@ -5,7 +5,7 @@
 	export let phase: Phase;
 </script>
 
-<div class="h-full w-full flex items-center justify-center">
+<div class="h-full w-full flex items-stretch justify-center flex-col">
 	{#if $phaseStore == phase}
 		<slot />
 	{:else if phaseOrdering.indexOf($phaseStore ?? '') > phaseOrdering.indexOf(phase)}

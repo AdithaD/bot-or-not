@@ -1,5 +1,5 @@
 import type { Game, Phase } from '$lib/game';
-import { moveToChat, moveToPrompt } from '$lib/server/game';
+import { moveToChat, moveToPrompt, moveToReveal } from '$lib/server/game';
 import { json } from '@sveltejs/kit';
 import { getAuth } from 'firebase-admin/auth';
 import { getDatabase } from 'firebase-admin/database';
@@ -42,6 +42,8 @@ export async function POST({ request }): Promise<Response> {
 		case 'chat':
 			await moveToChat(game, database);
 			break;
+		case 'reveal':
+			await moveToReveal(game, database);
 		default:
 			return json({ error: 'Invalid phase' }, { status: 400 });
 	}
