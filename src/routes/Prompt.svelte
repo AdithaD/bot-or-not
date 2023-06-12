@@ -87,9 +87,6 @@
 							if (description != null) descriptions[uid] = description as string;
 						});
 					}
-				} else {
-					console.log('not set. not ok');
-					descriptions = {};
 				}
 				if (Object.keys(descriptions).length == 0) {
 					Object.values(prompt?.allocation[$user?.uid ?? ''] ?? {}).forEach((uid) => {
