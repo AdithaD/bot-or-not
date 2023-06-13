@@ -15,7 +15,9 @@
 		<div />
 		<h1 class="font-bold text-2xl">Bot or Not</h1>
 		<div />
-		<div class="absolute right-4 top-3">
+		<div
+			class="absolute right-4 top-3 border-2 border-black rounded-xl hover:scale-105 transition transition-transform"
+		>
 			<a href="https://www.buymeacoffee.com/adithad">
 				<img
 					src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=&slug=adithad&button_colour=40DCA5&font_colour=ffffff&font_family=Lato&outline_colour=000000&coffee_colour=FFDD00"
