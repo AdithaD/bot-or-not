@@ -1,34 +1,38 @@
 <script lang="ts">
-	import { get, getDatabase, onValue, ref } from 'firebase/database';
-	import PhasedContent from '../components/PhasedContent.svelte';
-	import Section from '../components/Section.svelte';
-	import { gameId, users } from '$lib/stores';
 	import type { RevealData } from '$lib/game';
+	import { gameId, users } from '$lib/stores';
+	import { getDatabase, onValue, ref } from 'firebase/database';
 	import { onDestroy } from 'svelte';
 	import Border from '../components/Border.svelte';
 	import Button from '../components/Button.svelte';
+	import PhasedContent from '../components/PhasedContent.svelte';
+	import Section from '../components/Section.svelte';
 
-	let unsubscribe: Function;
+	let unsubscribe: Function | null = null;
 	let storeUnsubscribe: Function | null = null;
 	let revealData: RevealData | null = null;
 
-	storeUnsubscribe = gameId.subscribe((gameId) => {
-		if (unsubscribe != null) unsubscribe();
+	console.log(storeUnsubscribe != null, unsubscribe != null);
+	if (!storeUnsubscribe || !unsubscribe) {
+		storeUnsubscribe = gameId.subscribe((gameId) => {
+			if (unsubscribe != null) unsubscribe();
 
-		unsubscribe = onValue(ref(getDatabase(), `games/${gameId}/publicState/reveal`), (snapshot) => {
-			revealData = snapshot.val();
-			console.log(`game: ${gameId} reveal: ${JSON.stringify(revealData)}}`);
+			unsubscribe = onValue(
+				ref(getDatabase(), `games/${gameId}/publicState/reveal`),
+				(snapshot) => {
+					revealData = snapshot.val();
+					console.log(`game: ${gameId} reveal: ${JSON.stringify(revealData)}}`);
+				}
+			);
 		});
-	});
+	}
 
 	onDestroy(() => {
 		if (unsubscribe != null) unsubscribe();
 		if (storeUnsubscribe != null) storeUnsubscribe();
+		console.log('destroyed');
 	});
 
-	function getTruth(uid: string, target: string) {
-		return revealData?.[uid]?.[target]?.truth ?? false;
-	}
 	function getFooled(uid: string, target: string) {
 		return revealData?.[uid]?.[target]?.truth != revealData?.[uid]?.[target].decision;
 	}
@@ -41,7 +45,7 @@
 			<div class="flex flex-col items-stretch justify-between h-full space-y-4">
 				<div class="grid grid-rows-3 lg:grid-rows-none lg:grid-cols-3 gap-8 w-full h-full p-6">
 					{#each Object.keys(revealData ?? {}) as uid}
-						<div class="w-full shadow-lg rounded-xl p-4 border-2 border-black">
+						<div class="w-full shadow-xl rounded-xl p-4 border-2 border-black">
 							<h2 class="font-bold text-2xl mb-4">{$users?.[uid]?.username}</h2>
 							<div class="flex flex-col space-y-4">
 								{#each Object.keys(revealData[uid] ?? {}) as target}

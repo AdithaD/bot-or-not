@@ -16,9 +16,13 @@
 		<h1 class="font-bold text-2xl">Bot or Not</h1>
 		<div />
 		<div class="absolute right-4 top-3">
-			<Button click={() => window.location.assign('https://www.buymeacoffee.com/adithad')}
-				>Support Me!</Button
-			>
+			<a href="https://www.buymeacoffee.com/adithad">
+				<img
+					src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=&slug=adithad&button_colour=40DCA5&font_colour=ffffff&font_family=Lato&outline_colour=000000&coffee_colour=FFDD00"
+					alt="buy me a coffee"
+					class="h-10"
+				/>
+			</a>
 		</div>
 	</header>
 	<main class="p-8 lg:grid lg:grid-rows-4 lg:gap-8 w-full flex-grow space-y-8 lg:space-y-0">

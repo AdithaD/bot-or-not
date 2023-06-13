@@ -1,4 +1,3 @@
-import { env } from '$env/dynamic/private';
 import type {
 	Chat,
 	ChatSelections,
@@ -6,7 +5,6 @@ import type {
 	EnumeratedObject,
 	Game,
 	Message,
-	Messages,
 	PrivateGameState,
 	RevealData,
 	TargetedObject,
@@ -14,13 +12,12 @@ import type {
 	UserRevealData,
 	UserTargetRevealData
 } from '$lib/game';
+
 import { json } from '@sveltejs/kit';
-import { ServerValue, getDatabase, type Database, type Reference } from 'firebase-admin/database';
-import log from 'loglevel';
-import type { ChatCompletionRequestMessage } from 'openai';
+import { ServerValue, getDatabase, type Database } from 'firebase-admin/database';
+import { aiTurn } from './bot';
 
 const chatTime = 90;
-
 export const amountOfPromptsPerPlayer = 2;
 const chatsPerPlayer: { [playerCount: number]: number } = {
 	3: 1,
@@ -28,32 +25,26 @@ const chatsPerPlayer: { [playerCount: number]: number } = {
 	5: 2,
 	6: 3
 };
-
-const maxMessagesPerPlayerPerChat = 4;
+export const maxMessagesPerPlayerPerChat = 4;
 export const maxUsers = 6;
 
-const promptMessage = `The user and their good friends are playing a game online where they need to text each other and figure out if they are actually talking to each other or they are talking to an AI. You are the AI trying to deceive the user that you are the user's friend. The friend you are impersonating is described below in the brackets.
-
-{ {prompt} }
-
-You are this person. You know the user well. 
-`;
-
-function formatPromptMessage(prompt: string) {
-	return promptMessage.replace('{prompt}', prompt);
-}
-
+// Changes the game state to the prompt phase.
 export async function moveToPrompt(game: Game, database: Database) {
 	if (Object.keys(game.users).length < 3)
 		return json({ error: 'Not enough players' }, { status: 403 });
+
+	if (game.publicState.phase != 'lobby') {
+		return json({ error: 'Wrong origin phase' }, { status: 422 });
+	}
 
 	const updates: { [path: string]: any } = {};
 	// Initial game state
 	updates[`games/${game.id}/publicState/chatsPerPlayer`] =
 		chatsPerPlayer[Object.keys(game.users).length];
 
-	updates[`games/${game.id}/publicState/prompt/allocation`] = generateRandomAllocations(
-		Object.keys(game.users)
+	updates[`games/${game.id}/publicState/prompt/allocation`] = genRandAlloc(
+		Object.keys(game.users),
+		2
 	);
 
 	updates[`games/${game.id}/publicState/prompt/submitted`] = Object.keys(game.users).reduce(
@@ -68,12 +59,18 @@ export async function moveToPrompt(game: Game, database: Database) {
 	try {
 		await database.ref().update(updates);
 	} catch (error) {
+		console.error(error);
 		return json({ error: 'Failed to update database' }, { status: 500 });
 	}
 
 	return json({}, { status: 200 });
 }
+
 export async function moveToSelect(game: Game, database: Database) {
+	if (game.publicState.phase != 'prompt') {
+		return json({ error: 'Wrong origin phase' }, { status: 422 });
+	}
+
 	try {
 		await database.ref(`games/${game.id}/publicState/phase`).set('select');
 	} catch (error) {
@@ -81,7 +78,12 @@ export async function moveToSelect(game: Game, database: Database) {
 	}
 	return json({}, { status: 200 });
 }
+
 export async function moveToChat(game: Game, database: Database) {
+	if (game.publicState.phase != 'select') {
+		return json({ error: 'Wrong origin phase' }, { status: 422 });
+	}
+
 	try {
 		let prompts = (
 			await database.ref(`games/${game.id}/privateState/prompts`).get()
@@ -172,87 +174,11 @@ export async function moveToChat(game: Game, database: Database) {
 	}
 }
 
-const minimumAIDelay = 5000;
-const maximumAIDelay = 12000;
-
-async function aiTurn(
-	messageNumber: number,
-	userChatRef: Reference,
-	uid: string,
-	fakerId: string,
-	gameId: string
-) {
-	log.info(
-		`GAME: ${gameId}: AI turn for User ${uid} emulating ${fakerId} with message ${messageNumber}`
-	);
-	// Delay message on first.
-	if (messageNumber >= 0) {
-		// Get message data from database 💾
-		let messages = (await userChatRef.get()).val() as Messages;
-
-		let descriptions = (
-			await getDatabase().ref(`games/${gameId}/privateState/prompts/${fakerId}`).get()
-		).val() as { [uid: string]: string };
-
-		// Generate system message from prompts
-		let prompts: string = Object.values(descriptions).join('\n');
-		let systemMessage = {
-			role: 'system',
-			content: formatPromptMessage(prompts)
-		} as ChatCompletionRequestMessage;
-
-		// Transform messages into chat log
-		let previousChat = Object.values(messages ?? {}).map((message) => {
-			return {
-				role: message.uid == uid ? 'user' : 'assistant',
-				content: message.content
-			} as ChatCompletionRequestMessage;
-		});
-
-		// Send prompt to OpenAI 🤖
-		let body = {
-			model: 'gpt-3.5-turbo',
-			messages: [systemMessage, ...previousChat],
-			max_tokens: 20
-		};
-		let content: string = '';
-		if (env.ACTIVE_AI && env.ACTIVE_AI == 'TRUE') {
-			try {
-				const completion = await (
-					await fetch('https://api.openai.com/v1/chat/completions', {
-						method: 'POST',
-						headers: {
-							Authorization: `Bearer ${env.OPENAI_API_KEY}`,
-							'Content-Type': 'application/json'
-						},
-						body: JSON.stringify(body)
-					})
-				).json();
-
-				content = completion.choices[0].message.content;
-				//const content = 'I am a chatbox';
-
-				// Send message 💬
-			} catch (e) {
-				console.error(e);
-			}
-		} else {
-			content = 'I am a chatbox';
-		}
-		userChatRef.push({ uid: fakerId, content });
-	}
-
-	if (messageNumber < maxMessagesPerPlayerPerChat) {
-		// Prepare next message after delay ⏱ => 💬
-		let delay = Math.floor(Math.random() * (maximumAIDelay - minimumAIDelay)) + minimumAIDelay;
-
-		setTimeout(() => aiTurn(messageNumber + 1, userChatRef, uid, fakerId, gameId), delay);
-	} else {
-		// Kill 💀
-	}
-}
-
 export async function moveToReveal(game: Game, database: Database) {
+	if (game.publicState.phase != 'chat') {
+		return json({ error: 'Wrong origin phase' }, { status: 422 });
+	}
+
 	let types = (await (
 		await database.ref(`games/${game.id}/privateState/chatTypes`).get()
 	).val()) as TargetedObject<ChatTypes>;
@@ -298,88 +224,45 @@ export async function moveToReveal(game: Game, database: Database) {
 	await database.ref().update(updates);
 }
 
-const allocations = {
-	3: {
-		0: [1, 2],
-		1: [0, 2],
-		2: [0, 1]
-	},
-	4: {
-		0: [2, 1],
-		1: [3, 0],
-		2: [1, 3],
-		3: [0, 2]
-	},
-	5: {
-		0: [2, 4],
-		1: [3, 2],
-		2: [0, 1],
-		3: [4, 1],
-		4: [0, 3]
-	},
-	6: {
-		0: [1, 4, 5],
-		1: [0, 3, 2],
-		2: [1, 5, 3],
-		3: [4, 1, 2],
-		4: [5, 0, 3],
-		5: [4, 2, 0]
-	}
-} as { [amountOfPlayers: number]: { [playerIndex: number]: number[] } };
+function genRandAlloc(uids: string[], chooseAmount: number) {
+	/// Randomly shift array of indexes  1 -> n-1 to ensure that no one is paired with themselves. Shifts cannot double up otherwise a user may be assigned twice to the same person.
 
-// TODO: Better allocation algorithm
-export function generateRandomAllocations(uids: string[]) {
-	let shuffled = uids
-		.map((value) => ({ value, sort: Math.random() }))
-		.sort((a, b) => a.sort - b.sort)
-		.map(({ value }) => value);
-
+	// Initialise allocation object.
 	let allocation = {} as { [uid: string]: EnumeratedObject<string> };
+	uids.forEach((uid) => {
+		allocation[uid] = {};
+	});
 
-	let mapping = allocations[uids.length];
-	for (let i = 0; i < uids.length; i++) {
-		let uid = uids[i];
-		let targets = mapping[i];
+	// Will store the shifts that have been used so far.
+	let shifts: { [shift: number]: boolean } = {};
 
-		targets.forEach((target, i) => {
-			if (allocation[uid] == null) allocation[uid] = {};
+	for (let c = 0; c < chooseAmount; c++) {
+		// Find all shifts that have not been used yet.
+		let candidates = [];
+		for (let i = 1; i < uids.length; i++) {
+			if (!(i in shifts)) {
+				candidates.push(i);
+			}
+		}
 
-			allocation[uid][i] = shuffled[target];
-		});
+		// Randomly select a shift from the candidates.
+		let shift = candidates[Math.floor(Math.random() * candidates.length)];
+		shifts[shift] = true;
+
+		// Shift the indexes of the uids array [0..N-1] by shift.
+		let shiftedIndexes = [];
+		for (let i = 0; i < uids.length; i++) {
+			shiftedIndexes.push((i + shift) % uids.length);
+		}
+
+		// Assign each uid to the shifted index.
+		for (let i = 0; i < uids.length; i++) {
+			let uid = uids[i];
+			let target = uids[shiftedIndexes[i]];
+
+			allocation[uid][c] = target;
+		}
 	}
 
 	return allocation;
 }
-/* 
-	let selections: string[] = [];
-	uids.forEach((uid) => {
-		for (let i = 0; i < amountOfPromptsPerPlayer; i++) {
-			selections.push(uid);
-		}
-	});
-
-	let allocation = {} as { [uid: string]: EnumeratedObject<string> };
-	let counter = 0;
-	while (selections.length > 0) {
-		let uid = uids[Math.floor(counter / 2)];
-
-		if (allocation[uid] == null) allocation[uid] = {};
-
-		// Selection must not be the user or already selected
-		let filteredSelections = selections.filter(
-			(selection) =>
-				selection != uid && !Object.values(allocation[uid]).some((value) => value == selection)
-		);
-		let index = Math.floor(Math.random() * filteredSelections.length);
-		let selection = filteredSelections[index];
-
-		allocation[uid][(counter % 2).toString()] = selection;
-
-		selections.splice(selections.indexOf(selection), 1);
-
-		counter++;
-	}
-
-	console.log(JSON.stringify(allocation));
-
-	return allocation; */

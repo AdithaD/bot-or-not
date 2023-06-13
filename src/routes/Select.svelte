@@ -8,16 +8,7 @@
 	import PhasedContent from '../components/PhasedContent.svelte';
 
 	let amountOfPlayers = 0;
-	get(ref(getDatabase(), `games/${$gameId}/publicState/chatsPerPlayer`)).then((snapshot) => {
-		amountOfPlayers = snapshot.val() ?? 0;
-		console.log('amountOfPlayers: ', amountOfPlayers);
-	});
-
 	let selected = true;
-	get(ref(getDatabase(), `games/${$gameId}/publicState/select/selected/${$user?.uid}`)).then(
-		(snapshot) => (selected = snapshot.val() ?? false)
-	);
-
 	$: {
 		if ($phase == 'select') {
 			get(ref(getDatabase(), `games/${$gameId}/publicState/chatsPerPlayer`)).then((snapshot) => {

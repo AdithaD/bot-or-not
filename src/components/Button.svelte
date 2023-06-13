@@ -12,6 +12,7 @@
 		: 'bg-green-200'} justify-center flex items-center"
 	on:click={click}
 	{disabled}
+	tabindex="0"
 >
 	<slot />
 </button>
