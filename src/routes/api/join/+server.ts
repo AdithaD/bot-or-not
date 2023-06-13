@@ -29,7 +29,8 @@ export async function POST({ request }) {
 			let userRef = database.ref(`games/${gameId}/users/${user.uid}`);
 
 			try {
-				const dbUser = (await userRef.get()).val() as User;
+				const dbUser = (await userRef.get()).val();
+				console.log(dbUser);
 				if (dbUser) {
 					return json({ gameId, dbUser, error: 'User already exists' }, { status: 409 });
 				} else {
@@ -44,6 +45,7 @@ export async function POST({ request }) {
 				}
 			} catch (e) {
 				log.error(e);
+				return json({ error: 'Error joining game' }, { status: 500 });
 			}
 
 			return json({ gameId, user }, { status: 201 });

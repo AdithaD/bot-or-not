@@ -13,7 +13,6 @@
 		if ($phase == 'select') {
 			get(ref(getDatabase(), `games/${$gameId}/publicState/chatsPerPlayer`)).then((snapshot) => {
 				amountOfPlayers = snapshot.val() ?? 0;
-				console.log('amountOfPlayers: ', amountOfPlayers);
 			});
 			get(ref(getDatabase(), `games/${$gameId}/publicState/select/selected/${$user?.uid}`)).then(
 				(snapshot) => (selected = snapshot.val() ?? false)
@@ -26,8 +25,6 @@
 
 	async function sendSelections() {
 		const selectedUids = Object.keys(buttons).filter((uid) => buttons[uid]);
-		console.log('selectedUids: ', selectedUids);
-		console.log('asdf');
 		await fetch(`/api/game/select`, {
 			method: 'POST',
 			body: JSON.stringify({

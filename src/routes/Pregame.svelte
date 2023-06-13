@@ -6,6 +6,7 @@
 	import Button from '../components/Button.svelte';
 	import Section from '../components/Section.svelte';
 	import TextInput from '../components/TextInput.svelte';
+	import log from 'loglevel';
 
 	let gameIDInput = '';
 	let desiredUsername = '';
@@ -18,8 +19,6 @@
 			let id = body.id;
 			if (res.ok) {
 				let creds = await signInAnonymously(getAuth());
-				let userRef = ref(getDatabase(), `games/${id}/users/${creds.user.uid}`);
-				set(userRef, { uid: creds.user.uid, username: desiredUsername });
 				let body: JoinRequestBody = {
 					gameId: id,
 					user: {
@@ -55,7 +54,7 @@
 
 	async function sendJoinRequest(body: JoinRequestBody) {
 		await fetch('/api/join', { method: 'POST', body: JSON.stringify(body) }).then(() => {
-			console.log(`Joined game ${body.gameId}`);
+			log.log(`Joined game ${body.gameId}`);
 			gameId.set(body.gameId);
 			user.set(body.user);
 		});

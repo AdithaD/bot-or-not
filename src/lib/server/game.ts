@@ -16,7 +16,7 @@ import type {
 import { json } from '@sveltejs/kit';
 import { ServerValue, getDatabase, type Database } from 'firebase-admin/database';
 import { aiTurn } from './bot';
-
+import log from 'loglevel';
 const chatTime = 90;
 export const amountOfPromptsPerPlayer = 2;
 const chatsPerPlayer: { [playerCount: number]: number } = {
@@ -30,6 +30,7 @@ export const maxUsers = 6;
 
 // Changes the game state to the prompt phase.
 export async function moveToPrompt(game: Game, database: Database) {
+	log.log(`Game ${game.id}: Moving to prompt phase`);
 	if (Object.keys(game.users).length < 3)
 		return json({ error: 'Not enough players' }, { status: 403 });
 
@@ -67,6 +68,7 @@ export async function moveToPrompt(game: Game, database: Database) {
 }
 
 export async function moveToSelect(game: Game, database: Database) {
+	log.log(`Game ${game.id}: Moving to select phase`);
 	if (game.publicState.phase != 'prompt') {
 		return json({ error: 'Wrong origin phase' }, { status: 422 });
 	}
@@ -142,10 +144,13 @@ export async function moveToChat(game: Game, database: Database) {
 
 			// Auto reveal after time expires
 			database.ref(`games/${game.id}/publicState/chat/timer`).once('value', (snapshot) => {
+				log.log(`Game ${game.id}: Chat timer started for ${chatTime}`);
 				setTimeout(() => moveToReveal(game, database), snapshot.val().seconds * 1000);
 			});
 
 			await database.ref().update(updates);
+
+			return json({}, { status: 200 });
 		} else {
 			return json({ error: 'No prompts' }, { status: 403 });
 		}
@@ -175,6 +180,7 @@ export async function moveToChat(game: Game, database: Database) {
 }
 
 export async function moveToReveal(game: Game, database: Database) {
+	log.log(`Game ${game.id}: Moving to reveal phase`);
 	if (game.publicState.phase != 'chat') {
 		return json({ error: 'Wrong origin phase' }, { status: 422 });
 	}
@@ -222,6 +228,8 @@ export async function moveToReveal(game: Game, database: Database) {
 	updates[`games/${game.id}/publicState/phase`] = 'reveal';
 
 	await database.ref().update(updates);
+
+	return json({}, { status: 200 });
 }
 
 function genRandAlloc(uids: string[], chooseAmount: number) {
