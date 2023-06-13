@@ -3,6 +3,7 @@ import { amountOfPromptsPerPlayer } from '$lib/server/game';
 import { json } from '@sveltejs/kit';
 import { getAuth } from 'firebase-admin/auth';
 import { getDatabase } from 'firebase-admin/database';
+import log from 'loglevel';
 
 const maxPromptLength = 150;
 
@@ -32,7 +33,7 @@ export async function GET({ request, url }): Promise<Response> {
 
 		return json({ prompts: userPrompts }, { status: 200 });
 	} catch (error: any) {
-		console.log(error);
+		log.error(error);
 		return json({ error: 'Internal server error' }, { status: 500 });
 	}
 }

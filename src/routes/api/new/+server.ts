@@ -13,7 +13,6 @@ export async function POST() {
 			return json({ id: game.id }, { status: 200 });
 		})
 		.catch((e) => {
-			console.log;
 			return json({ error: e }, { status: 500 });
 		});
 }

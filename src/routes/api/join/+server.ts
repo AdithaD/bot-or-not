@@ -30,7 +30,6 @@ export async function POST({ request }) {
 
 			try {
 				const dbUser = (await userRef.get()).val();
-				console.log(dbUser);
 				if (dbUser) {
 					return json({ gameId, dbUser, error: 'User already exists' }, { status: 409 });
 				} else {

@@ -23,6 +23,8 @@
 	let buttons: { [uid: string]: boolean } = {};
 	$: amountOfCheckedButtons = Object.values(buttons).filter((button) => button).length;
 
+	$: otherUsers = $user ? Object.keys(buttons).filter((uid) => uid != $user?.uid) : [];
+
 	async function sendSelections() {
 		const selectedUids = Object.keys(buttons).filter((uid) => buttons[uid]);
 		await fetch(`/api/game/select`, {
@@ -48,8 +50,8 @@
 		<div class="space-y-16">
 			<div class="font-bold text-xl">Select {amountOfPlayers} players 😉 to chat to:</div>
 			<div class=" space-y-4">
-				{#if $users}
-					{#each Object.keys($users).filter((uid) => uid != $user?.uid) as target}
+				{#if $users && $user != null}
+					{#each otherUsers as target}
 						<ToggleButton
 							toggledColour="bg-green-700"
 							bind:checked={buttons[target]}

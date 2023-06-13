@@ -13,26 +13,28 @@
 	let storeUnsubscribe: Function | null = null;
 	let prompt: PromptData | null = null;
 
-	storeUnsubscribe = gameId.subscribe((gameId) => {
-		if (unsubscribe != null) unsubscribe();
+	$: allSubmitted =
+		prompt && prompt.submitted
+			? Object.values(prompt.submitted).every((submitted) => submitted)
+			: false;
 
-		unsubscribe = onValue(ref(getDatabase(), `games/${gameId}/publicState/prompt`), (snapshot) => {
-			prompt = snapshot.val();
-			console.log(`game: ${gameId} prompt: ${JSON.stringify(prompt)}}`);
-			loadDescriptions();
-		});
-	});
-
-	$: allSubmitted = prompt
-		? Object.values(prompt.submitted ?? {}).every((submitted) => submitted)
-		: false;
 	$: submitted = prompt && $user ? prompt.submitted[$user.uid] ?? false : false;
 
 	let descriptions: { [uid: string]: string } = {};
 
 	$: {
 		if ($phase == 'prompt') {
-			loadDescriptions();
+			storeUnsubscribe = gameId.subscribe((gameId) => {
+				if (unsubscribe != null) unsubscribe();
+
+				unsubscribe = onValue(
+					ref(getDatabase(), `games/${gameId}/publicState/prompt`),
+					(snapshot) => {
+						prompt = snapshot.val();
+						loadDescriptions();
+					}
+				);
+			});
 		}
 	}
 
@@ -99,10 +101,8 @@
 			})
 
 			.catch((e) => {
-				console.log('not set. err');
 				descriptions = {};
 			});
-		console.log(Object.keys(descriptions));
 	}
 </script>
 

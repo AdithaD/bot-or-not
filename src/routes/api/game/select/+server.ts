@@ -22,7 +22,6 @@ export async function POST({ request }) {
 
 	let uid: string | null = null;
 	try {
-		console.log(request.headers.get('Authorization')?.split(' ')[1] ?? '');
 		let decoded = await getAuth().verifyIdToken(
 			request.headers.get('Authorization')?.split(' ')[1] ?? ''
 		);
