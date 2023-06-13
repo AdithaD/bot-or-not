@@ -35,15 +35,13 @@
 </script>
 
 <Section>
-	<h1 class="font-bold text-2xl mb-8">Reveal 🔍</h1>
+	<h1 class="font-bold text-2xl">Reveal 🔍</h1>
 	<PhasedContent phase="reveal">
 		{#if revealData}
 			<div class="flex flex-col items-stretch justify-between h-full space-y-4">
-				<div
-					class="grid grid-rows-3 lg:grid-rows-none lg:grid-cols-3 gap-4 w-full h-full justify-between items-stretch"
-				>
+				<div class="grid grid-rows-3 lg:grid-rows-none lg:grid-cols-3 gap-8 w-full h-full p-6">
 					{#each Object.keys(revealData ?? {}) as uid}
-						<div class="w-full h- shadow-lg rounded-xl p-4">
+						<div class="w-full shadow-lg rounded-xl p-4 border-2 border-black">
 							<h2 class="font-bold text-2xl mb-4">{$users?.[uid]?.username}</h2>
 							<div class="flex flex-col space-y-4">
 								{#each Object.keys(revealData[uid] ?? {}) as target}
@@ -62,7 +60,7 @@
 											{/if}
 										</div>
 									</div>
-									<div class="flex justify-between">
+									<div class="flex justify-between space-x-2">
 										{#each Object.values(revealData[uid]?.[target]?.prompts) as prompt, i}
 											<div class="text-start w-full h-fit">
 												<p class="font-bold">

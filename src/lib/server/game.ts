@@ -10,14 +10,13 @@ import type {
 	PrivateGameState,
 	RevealData,
 	TargetedObject,
-	User,
 	UserGameState,
 	UserRevealData,
 	UserTargetRevealData
 } from '$lib/game';
 import { json } from '@sveltejs/kit';
-import { getDatabase, type Database, type Reference, ServerValue } from 'firebase-admin/database';
-import { onValue } from 'firebase/database';
+import { ServerValue, getDatabase, type Database, type Reference } from 'firebase-admin/database';
+import log from 'loglevel';
 import type { ChatCompletionRequestMessage } from 'openai';
 
 const chatTime = 90;
@@ -158,7 +157,6 @@ export async function moveToChat(game: Game, database: Database) {
 
 		u1ToU2.on('child_added', (snapshot) => {
 			let newMessage: Message = snapshot.val();
-			console.log(`from: ${from} to: ${to} `);
 			if (newMessage && newMessage.uid != to) {
 				u2ToU1.push(newMessage);
 			}
@@ -184,7 +182,9 @@ async function aiTurn(
 	fakerId: string,
 	gameId: string
 ) {
-	console.log(`AI turn for User ${uid} emulating ${fakerId} with message ${messageNumber}`);
+	log.info(
+		`GAME: ${gameId}: AI turn for User ${uid} emulating ${fakerId} with message ${messageNumber}`
+	);
 	// Delay message on first.
 	if (messageNumber >= 0) {
 		// Get message data from database 💾
@@ -298,8 +298,59 @@ export async function moveToReveal(game: Game, database: Database) {
 	await database.ref().update(updates);
 }
 
+const allocations = {
+	3: {
+		0: [1, 2],
+		1: [0, 2],
+		2: [0, 1]
+	},
+	4: {
+		0: [2, 1],
+		1: [3, 0],
+		2: [1, 3],
+		3: [0, 2]
+	},
+	5: {
+		0: [2, 4],
+		1: [3, 2],
+		2: [0, 1],
+		3: [4, 1],
+		4: [0, 3]
+	},
+	6: {
+		0: [1, 4, 5],
+		1: [0, 3, 2],
+		2: [1, 5, 3],
+		3: [4, 1, 2],
+		4: [5, 0, 3],
+		5: [4, 2, 0]
+	}
+} as { [amountOfPlayers: number]: { [playerIndex: number]: number[] } };
+
 // TODO: Better allocation algorithm
 export function generateRandomAllocations(uids: string[]) {
+	let shuffled = uids
+		.map((value) => ({ value, sort: Math.random() }))
+		.sort((a, b) => a.sort - b.sort)
+		.map(({ value }) => value);
+
+	let allocation = {} as { [uid: string]: EnumeratedObject<string> };
+
+	let mapping = allocations[uids.length];
+	for (let i = 0; i < uids.length; i++) {
+		let uid = uids[i];
+		let targets = mapping[i];
+
+		targets.forEach((target, i) => {
+			if (allocation[uid] == null) allocation[uid] = {};
+
+			allocation[uid][i] = shuffled[target];
+		});
+	}
+
+	return allocation;
+}
+/* 
 	let selections: string[] = [];
 	uids.forEach((uid) => {
 		for (let i = 0; i < amountOfPromptsPerPlayer; i++) {
@@ -314,6 +365,7 @@ export function generateRandomAllocations(uids: string[]) {
 
 		if (allocation[uid] == null) allocation[uid] = {};
 
+		// Selection must not be the user or already selected
 		let filteredSelections = selections.filter(
 			(selection) =>
 				selection != uid && !Object.values(allocation[uid]).some((value) => value == selection)
@@ -330,5 +382,4 @@ export function generateRandomAllocations(uids: string[]) {
 
 	console.log(JSON.stringify(allocation));
 
-	return allocation;
-}
+	return allocation; */

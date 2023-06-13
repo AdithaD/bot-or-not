@@ -5,9 +5,11 @@
 </script>
 
 <button
-	class="{expandh ? 'h-full' : ''} p-2 w-full font-bold text-white rounded-xl shadow-md {!disabled
-		? 'bg-primary hover:translate-y-0.5 transition-transform'
-		: 'bg-primarylight'}"
+	class="{expandh
+		? 'h-full'
+		: ''} p-2 w-full border-2 border-black font-bold text-black rounded-xl shadow-md {!disabled
+		? 'bg-green-400 hover:translate-y-0.5 transition-transform'
+		: 'bg-green-200'} justify-center flex items-center"
 	on:click={click}
 	{disabled}
 >

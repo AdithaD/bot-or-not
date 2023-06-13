@@ -2,7 +2,7 @@
 	import ToggleButton from '../components/ToggleButton.svelte';
 
 	import type { ChatData } from '$lib/game';
-	import { gameId, user, users } from '$lib/stores';
+	import { gameId, phase, user, users } from '$lib/stores';
 	import { get, getDatabase, onValue, ref, set, update } from 'firebase/database';
 	import { onDestroy } from 'svelte';
 	import FirebaseChatBox from '../components/FirebaseChatBox.svelte';
@@ -23,7 +23,12 @@
 
 	let decisions: { [target: string]: boolean } = {};
 	let disabled: { [target: string]: boolean } = {};
-	getDecisionsState();
+
+	$: {
+		if ($phase == 'chat') {
+			getDecisionsState();
+		}
+	}
 
 	let timeRemaining = 60;
 	let serverTimeOffset = 0;

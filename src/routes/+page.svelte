@@ -10,12 +10,12 @@
 
 <div class="min-h-screen flex flex-col">
 	<header
-		class="shadow-md border-b-4 border-primary w-full p-4 text-center flex justify-between relative"
+		class="shadow-md border-b-4 border-primary bg-green-300 w-full p-4 text-center flex justify-between relative"
 	>
 		<div />
 		<h1 class="font-bold text-2xl">Bot or Not</h1>
 		<div />
-		<div class="absolute right-4">
+		<div class="absolute right-4 top-3">
 			<Button click={() => window.location.assign('https://www.buymeacoffee.com/adithad')}
 				>Support Me!</Button
 			>

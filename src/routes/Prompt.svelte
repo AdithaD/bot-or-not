@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { PromptData } from '$lib/game';
-	import { gameId, isOwner, user, users } from '$lib/stores';
+	import { gameId, isOwner, phase, user, users } from '$lib/stores';
 	import { getAuth } from 'firebase/auth';
 	import { getDatabase, onValue, ref } from 'firebase/database';
 	import { onDestroy } from 'svelte';
@@ -30,7 +30,11 @@
 
 	let descriptions: { [uid: string]: string } = {};
 
-	loadDescriptions();
+	$: {
+		if ($phase == 'prompt') {
+			loadDescriptions();
+		}
+	}
 
 	onDestroy(() => {
 		if (unsubscribe != null) unsubscribe();

@@ -27,12 +27,7 @@
 						username: desiredUsername
 					}
 				};
-
-				fetch('/api/join', { method: 'POST', body: JSON.stringify(body) }).then(() => {
-					console.log('joined game');
-					gameId.set(body.gameId);
-					user.set(body.user);
-				});
+				await sendJoinRequest(body);
 			}
 		});
 	}
@@ -55,8 +50,12 @@
 			}
 		};
 
-		fetch('/api/join', { method: 'POST', body: JSON.stringify(body) }).then(() => {
-			console.log('joined game');
+		await sendJoinRequest(body);
+	}
+
+	async function sendJoinRequest(body: JoinRequestBody) {
+		await fetch('/api/join', { method: 'POST', body: JSON.stringify(body) }).then(() => {
+			console.log(`Joined game ${body.gameId}`);
 			gameId.set(body.gameId);
 			user.set(body.user);
 		});

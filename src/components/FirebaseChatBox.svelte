@@ -21,7 +21,6 @@
 	}
 
 	async function sendMessage(content: string) {
-		console.log(`pushing to ${refPath}`);
 		await push(chatRef, { uid: $user?.uid, username: $user?.username, content } as Message);
 	}
 </script>

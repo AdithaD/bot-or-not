@@ -25,7 +25,6 @@ if (browser) {
 				usFunc = onValue(
 					ref(getDatabase(), `games/${gameId}/users`),
 					(snapshot) => {
-						console.log(`users/${gameId} changed to ${JSON.stringify(snapshot.val())}`);
 						set(snapshot.val());
 					},
 					(error) => {
@@ -50,7 +49,6 @@ if (browser) {
 				.then((snapshot) => {
 					let uid = storeGet(user)?.uid;
 					set(snapshot.val() == uid);
-					console.log(snapshot.val() == uid);
 				})
 				.catch((error) => {
 					console.log('Could not get owner');
@@ -58,10 +56,7 @@ if (browser) {
 		});
 		let us2 = user.subscribe((user) => {
 			get(ref(getDatabase(), `games/${storeGet(gameId)}/owner`))
-				.then((snapshot) => {
-					set(snapshot.val() == user?.uid);
-					console.log(snapshot.val() == user?.uid);
-				})
+				.then((snapshot) => {})
 				.catch((error) => {
 					console.log('Could not get owner');
 				});
