@@ -82,7 +82,7 @@
 										<div class="h-full">
 											<Border>
 												<div class="overflow-y-auto p-2">
-													{#each Object.values(revealData[uid]?.[target]?.messages.messages) as message}
+													{#each Object.values(revealData[uid]?.[target]?.messages?.messages ?? {}) as message}
 														<div class="p-1 font-bold">
 															{$users?.[message.uid]?.username ?? 'Unknown user'}: {message.content}
 														</div>

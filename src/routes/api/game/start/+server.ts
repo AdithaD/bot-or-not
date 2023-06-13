@@ -38,10 +38,7 @@ export async function POST({ request }): Promise<Response> {
 		case 'select':
 			return await moveToSelect(game, database);
 		case 'chat':
-			await moveToChat(game, database);
-			break;
-		case 'reveal':
-			await moveToReveal(game, database);
+			return await moveToChat(game, database);
 		default:
 			return json({ error: 'Invalid phase' }, { status: 400 });
 	}

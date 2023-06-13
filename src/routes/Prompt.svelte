@@ -85,7 +85,6 @@
 			.then(async (res) => {
 				if (res.ok) {
 					let data = await res.json();
-					console.log(`set ${JSON.stringify(data)}`);
 					if (data.prompts) {
 						Object.entries(data.prompts).forEach(([uid, description]) => {
 							if (description != null) descriptions[uid] = description as string;

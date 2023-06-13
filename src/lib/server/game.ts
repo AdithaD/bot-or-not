@@ -8,6 +8,7 @@ import type {
 	PrivateGameState,
 	RevealData,
 	TargetedObject,
+	User,
 	UserGameState,
 	UserRevealData,
 	UserTargetRevealData
@@ -17,7 +18,7 @@ import { json } from '@sveltejs/kit';
 import { ServerValue, getDatabase, type Database } from 'firebase-admin/database';
 import { aiTurn } from './bot';
 import log from 'loglevel';
-const chatTime = 90;
+const chatTime = 10;
 export const amountOfPromptsPerPlayer = 2;
 const chatsPerPlayer: { [playerCount: number]: number } = {
 	3: 1,
@@ -145,7 +146,7 @@ export async function moveToChat(game: Game, database: Database) {
 			// Auto reveal after time expires
 			database.ref(`games/${game.id}/publicState/chat/timer`).once('value', (snapshot) => {
 				log.log(`Game ${game.id}: Chat timer started for ${chatTime}`);
-				setTimeout(() => moveToReveal(game, database), snapshot.val().seconds * 1000);
+				setTimeout(() => moveToReveal(game.id, database), snapshot.val().seconds * 1000);
 			});
 
 			await database.ref().update(updates);
@@ -179,55 +180,68 @@ export async function moveToChat(game: Game, database: Database) {
 	}
 }
 
-export async function moveToReveal(game: Game, database: Database) {
-	log.log(`Game ${game.id}: Moving to reveal phase`);
-	if (game.publicState.phase != 'chat') {
+export async function moveToReveal(gameId: string, database: Database) {
+	let phase = (await database.ref(`games/${gameId}/publicState/phase`).get()).val();
+	log.log(`Game ${gameId}: Moving to reveal phase`);
+	if (phase != 'chat') {
+		log.error(`Game ${gameId}: Wrong origin phase`);
 		return json({ error: 'Wrong origin phase' }, { status: 422 });
 	}
 
-	let types = (await (
-		await database.ref(`games/${game.id}/privateState/chatTypes`).get()
-	).val()) as TargetedObject<ChatTypes>;
-
-	// Kills all chat listeners
-	for (const [uid, targets] of Object.entries(types)) {
-		for (const target of Object.keys(targets)) {
-			let chatRef = database.ref(`games/${game.id}/userState/${uid}/chats/${target}/messages`);
-			chatRef.off();
+	try {
+		let types = (await (
+			await database.ref(`games/${gameId}/privateState/chatTypes`).get()
+		).val()) as TargetedObject<ChatTypes>;
+		// Kills all chat listeners
+		for (const [uid, targets] of Object.entries(types)) {
+			for (const target of Object.keys(targets)) {
+				let chatRef = database.ref(`games/${gameId}/userState/${uid}/chats/${target}/messages`);
+				chatRef.off();
+			}
 		}
+	} catch (error) {
+		log.error(error);
+		return json({ error: 'Failed to update database' }, { status: 500 });
 	}
+	try {
+		const privateGameState = (await (
+			await database.ref(`games/${gameId}/privateState`).get()
+		).val()) as PrivateGameState;
 
-	const privateGameState = (await (
-		await database.ref(`games/${game.id}/privateState`).get()
-	).val()) as PrivateGameState;
-	const revealData: RevealData = {};
+		const revealData: RevealData = {};
 
-	for (const user of Object.values(game.users)) {
-		const userRevealData: UserRevealData = {};
+		const users = (await database.ref(`games/${gameId}/users`).get()).val() as {
+			[uid: string]: User;
+		};
 
-		const userState = (await (
-			await database.ref(`games/${game.id}/userState/${user.uid}`).get()
-		).val()) as UserGameState;
+		for (const user of Object.values(users)) {
+			const userRevealData: UserRevealData = {};
 
-		for (const target of Object.keys(userState.chats)) {
-			const userTargetRevealData: UserTargetRevealData = {
-				messages: userState.chats[target],
-				decision: privateGameState.decisions?.[user.uid]?.[target] ?? false,
-				truth: privateGameState.chatTypes[user.uid][target] == 'P2AI',
-				prompts: privateGameState.prompts[target]
-			};
+			const userState = (await (
+				await database.ref(`games/${gameId}/userState/${user.uid}`).get()
+			).val()) as UserGameState;
 
-			userRevealData[target] = userTargetRevealData;
+			for (const target of Object.keys(userState.chats)) {
+				const userTargetRevealData: UserTargetRevealData = {
+					messages: userState.chats[target],
+					decision: privateGameState.decisions?.[user.uid]?.[target] ?? false,
+					truth: privateGameState.chatTypes[user.uid][target] == 'P2AI',
+					prompts: privateGameState.prompts[target]
+				};
+				userRevealData[target] = userTargetRevealData;
+			}
+			revealData[user.uid] = userRevealData;
 		}
+		const updates: { [path: string]: any } = {};
 
-		revealData[user.uid] = userRevealData;
+		updates[`games/${gameId}/publicState/reveal`] = revealData;
+		updates[`games/${gameId}/publicState/phase`] = 'reveal';
+
+		await database.ref().update(updates);
+	} catch (error) {
+		log.error(error);
+		return json({ error: 'Failed to update database' }, { status: 500 });
 	}
-	const updates: { [path: string]: any } = {};
-
-	updates[`games/${game.id}/publicState/reveal`] = revealData;
-	updates[`games/${game.id}/publicState/phase`] = 'reveal';
-
-	await database.ref().update(updates);
 
 	return json({}, { status: 200 });
 }
