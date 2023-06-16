@@ -32,6 +32,7 @@ export const maxUsers = 6;
 // Changes the game state to the prompt phase.
 export async function moveToPrompt(game: Game, database: Database) {
 	log.log(`Game ${game.id}: Moving to prompt phase`);
+
 	if (Object.keys(game.users).length < 3)
 		return json({ error: 'Not enough players' }, { status: 403 });
 
@@ -183,6 +184,7 @@ export async function moveToChat(game: Game, database: Database) {
 export async function moveToReveal(gameId: string, database: Database) {
 	let phase = (await database.ref(`games/${gameId}/publicState/phase`).get()).val();
 	log.log(`Game ${gameId}: Moving to reveal phase`);
+
 	if (phase != 'chat') {
 		log.error(`Game ${gameId}: Wrong origin phase`);
 		return json({ error: 'Wrong origin phase' }, { status: 422 });
@@ -203,6 +205,7 @@ export async function moveToReveal(gameId: string, database: Database) {
 		log.error(error);
 		return json({ error: 'Failed to update database' }, { status: 500 });
 	}
+
 	try {
 		const privateGameState = (await (
 			await database.ref(`games/${gameId}/privateState`).get()

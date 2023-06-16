@@ -2,11 +2,10 @@
 	import type { JoinRequestBody } from '$lib/game';
 	import { gameId, user } from '$lib/stores';
 	import { getAuth, signInAnonymously } from 'firebase/auth';
-	import { getDatabase, ref, set } from 'firebase/database';
 	import Button from '../components/Button.svelte';
 	import Section from '../components/Section.svelte';
-	import TextInput from '../components/TextInput.svelte';
 	import log from 'loglevel';
+	import TextInput from '../components/TextInput.svelte';
 
 	let gameIDInput = '';
 	let desiredUsername = '';

@@ -9,6 +9,8 @@
 
 	let amountOfPlayers = 0;
 	let selected = true;
+	let buttons: { [uid: string]: boolean } = {};
+
 	$: {
 		if ($phase == 'select') {
 			get(ref(getDatabase(), `games/${$gameId}/publicState/chatsPerPlayer`)).then((snapshot) => {
@@ -20,7 +22,6 @@
 		}
 	}
 
-	let buttons: { [uid: string]: boolean } = {};
 	$: amountOfCheckedButtons = Object.values(buttons).filter((button) => button).length;
 
 	$: otherUsers = $user ? Object.keys(buttons).filter((uid) => uid != $user?.uid) : [];

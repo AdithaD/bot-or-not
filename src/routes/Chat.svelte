@@ -40,11 +40,13 @@
 	onValue(ref(getDatabase(), `games/${$gameId}/publicState/chat/timer`), (snapshot) => {
 		let timer = snapshot.val();
 
+		let interval: NodeJS.Timer | null = null;
 		if (timer) {
-			const interval = setInterval(() => {
+			if (interval != null) clearInterval(interval);
+			interval = setInterval(() => {
 				const timeLeft = timer.seconds * 1000 - (Date.now() - timer.startAt - serverTimeOffset);
 				if (timeLeft < 0) {
-					clearInterval(interval);
+					clearInterval(interval!);
 				} else {
 					timeRemaining = Math.floor(timeLeft / 1000);
 				}

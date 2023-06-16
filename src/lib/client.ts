@@ -16,7 +16,6 @@ export async function initialiseFirebase() {
 	console.log('🔥 Initializing Firebase SDK');
 
 	const app = initializeApp(firebaseConfig);
-	const database = getDatabase(app);
 	const auth = getAuth(app);
 	auth.setPersistence(browserSessionPersistence);
 	signInAnonymously(auth);

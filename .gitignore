@@ -12,3 +12,6 @@ vite.config.ts.timestamp-*
 database.rules.json
 firebase.json
 .firebaserc
+/test-results/
+/playwright-report/
+/playwright/.cache/

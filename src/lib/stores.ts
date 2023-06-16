@@ -1,7 +1,7 @@
 import { browser } from '$app/environment';
-import { get, getDatabase, onValue, ref, type Unsubscribe } from 'firebase/database';
-import { readable, writable, type Readable, get as storeGet } from 'svelte/store';
-import type { Game, Phase, User } from './game';
+import { getDatabase, onValue, ref, type Unsubscribe } from 'firebase/database';
+import { readable, get as storeGet, writable, type Readable } from 'svelte/store';
+import type { Phase, User } from './game';
 
 export const gameId = writable<string | null>(null);
 export const user = writable<User | null>(null);
@@ -18,92 +18,31 @@ if (browser) {
 		sessionStorage.setItem('gameId', JSON.stringify(value));
 	});
 
-	users = readable<{ [uid: string]: User } | null>(null, (set) => {
-		let usFunc: Unsubscribe | null = null;
-		gameId.subscribe((gameId) => {
-			if (gameId != null) {
-				usFunc = onValue(
-					ref(getDatabase(), `games/${gameId}/users`),
-					(snapshot) => {
-						set(snapshot.val());
-					},
-					(error) => {
-						console.log(error);
-					}
-				);
-			} else {
-				set(null);
-			}
-		});
-		return function stop() {
-			if (usFunc != null) {
-				usFunc();
-			}
-		};
-	});
+	isOwner = createFirebaseReadableStore<boolean>(`/owner`, (val) => val == storeGet(user)?.uid);
+	users = createFirebaseReadableStore<{ [uid: string]: User }>(`users`);
+	phase = createFirebaseReadableStore<Phase>(`publicState/phase`);
+	round = createFirebaseReadableStore<number>(`publicState/round`);
+}
 
-	isOwner = readable<boolean>(false, (set) => {
+export var users: Readable<{ [uid: string]: User } | null>,
+	isOwner: Readable<boolean | null>,
+	phase: Readable<Phase | null>,
+	round: Readable<number | null>;
+
+function createFirebaseReadableStore<T>(
+	subGamePath: string,
+	parser?: (val: any) => T
+): Readable<T | null> {
+	return readable<T | null>(null, (set) => {
 		let usFunc: Unsubscribe | null = null;
-		let us1 = gameId.subscribe((gameId) => {
-			get(ref(getDatabase(), `games/${gameId}/owner`))
-				.then((snapshot) => {
-					let uid = storeGet(user)?.uid;
-					set(snapshot.val() == uid);
-				})
-				.catch((error) => {
-					console.log('Could not get owner');
-				});
-		});
-		let us2 = user.subscribe((user) => {
-			get(ref(getDatabase(), `games/${storeGet(gameId)}/owner`))
-				.then((snapshot) => {})
-				.catch((error) => {
-					console.log('Could not get owner');
-				});
-		});
-		return function stop() {
-			if (usFunc != null) {
-				usFunc();
-			}
-			if (us1) us1();
-			if (us2) us2();
-		};
-	});
-	phase = readable<Phase | null>(null, (set) => {
-		let usFunc: Unsubscribe | null = null;
-		gameId.subscribe((gameId) => {
-			if (gameId != null) {
+		gameId.subscribe((id) => {
+			if (id != null) {
 				usFunc = onValue(
-					ref(getDatabase(), `games/${gameId}/publicState/phase`),
-					(snapshot) => {
-						set(snapshot.val());
-					},
-					(error) => {
-						console.log(error);
-					}
-				);
-			} else {
-				set(null);
-			}
-		});
-		return function stop() {
-			if (usFunc != null) {
-				usFunc();
-			}
-		};
-	});
-	round = readable<number | null>(null, (set) => {
-		let usFunc: Unsubscribe | null = null;
-		gameId.subscribe((gameId) => {
-			if (gameId != null) {
-				usFunc = onValue(
-					ref(getDatabase(), `games/${gameId}/publicState/round`),
-					(snapshot) => {
-						set(parseInt(snapshot.val()));
-					},
-					(error) => {
-						console.log(error);
-					}
+					ref(getDatabase(), `games/${id}/${subGamePath}`),
+					(snapshot) =>
+						set(snapshot.val() ? (parser ? parser(snapshot.val()) : snapshot.val()) : null),
+
+					(error) => console.log(error)
 				);
 			} else {
 				set(null);
@@ -116,8 +55,3 @@ if (browser) {
 		};
 	});
 }
-
-export var users: Readable<{ [uid: string]: User } | null>,
-	isOwner: Readable<boolean>,
-	phase: Readable<Phase | null>,
-	round: Readable<number | null>;
