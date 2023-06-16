@@ -1,32 +1,35 @@
-import type { Game, JoinRequestBody, User } from '$lib/game.js';
-import { maxUsers } from '$lib/server/game.js';
+import type { JoinRequestBody } from '$lib/game';
+import { maxUsers } from '$lib/server/game';
 import { json } from '@sveltejs/kit';
 import { getDatabase } from 'firebase-admin/database';
+import type { User } from '$lib/game.js';
 import log from 'loglevel';
+import { v4 as uuidv4, validate } from 'uuid';
 
-export async function POST({ request }) {
-	let { gameId, user } = (await request.json()) as JoinRequestBody;
+export async function POST({ request, params }) {
+	let { user } = (await request.json()) as JoinRequestBody;
 
-	if (user.username == null || user.username.length < 1) {
+	let { uid, username } = user;
+
+	let gameId = params.slug;
+
+	if (username == null || username.length < 1) {
 		return json({ error: 'Username is required' }, { status: 400 });
 	}
 
 	if (gameId == null || gameId.length < 1) {
 		return json({ error: 'Game ID is required' }, { status: 400 });
-	}
-
-	if (user.uid == null) {
-		return json({ error: 'User ID is required' }, { status: 400 });
+	} else if (!validate(gameId)) {
+		return json({ error: 'Game ID is not valid' }, { status: 400 });
 	}
 
 	let database = getDatabase();
-	let gameSnapshot = await database.ref(`games/${gameId}`).get();
+	let users = (await database.ref(`games/${gameId}/users`).get()).val() as { [uid: string]: User };
 
-	if (gameSnapshot.exists()) {
-		let game = gameSnapshot.val() as Game;
-
-		if (game.users == null || Object.keys(game.users).length < maxUsers) {
-			let userRef = database.ref(`games/${gameId}/users/${user.uid}`);
+	if (users) {
+		if (users == null || Object.keys(users).length < maxUsers) {
+			console.log(JSON.stringify(uid));
+			let userRef = database.ref(`games/${gameId}/users/${uid}`);
 
 			try {
 				const dbUser = (await userRef.get()).val();
@@ -36,7 +39,9 @@ export async function POST({ request }) {
 					await userRef.set(user);
 					log.info(`GAME ${gameId}: USER ${user.uid} - ${user.username} joined.`);
 
-					if (!game.owner || game.owner == null) {
+					let owner = (await database.ref(`games/${gameId}/owner`).get()).val();
+
+					if (!owner) {
 						let ownerRef = database.ref(`games/${gameId}/owner`);
 						await ownerRef.set(user.uid);
 						log.info(`GAME ${gameId}: USER ${user.uid} - ${user.username} is the owner.`);

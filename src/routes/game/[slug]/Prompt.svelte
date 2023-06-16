@@ -4,10 +4,10 @@
 	import { getAuth } from 'firebase/auth';
 	import { getDatabase, onValue, ref } from 'firebase/database';
 	import { onDestroy } from 'svelte';
-	import Border from '../components/Border.svelte';
-	import Button from '../components/Button.svelte';
-	import PhasedContent from '../components/PhasedContent.svelte';
-	import Section from '../components/Section.svelte';
+	import Border from 'components/Border.svelte';
+	import Button from 'components/Button.svelte';
+	import PhasedContent from 'components/PhasedContent.svelte';
+	import Section from 'components/Section.svelte';
 
 	let unsubscribe: Function | null = null;
 	let storeUnsubscribe: Function | null = null;
@@ -43,9 +43,9 @@
 		if (storeUnsubscribe != null) storeUnsubscribe();
 	});
 	async function submit() {
-		fetch(`/api/game/prompt`, {
+		fetch(`/api/game/${$gameId}/prompt`, {
 			method: 'POST',
-			body: JSON.stringify({ gameId: $gameId, prompts: descriptions }),
+			body: JSON.stringify({ prompts: descriptions }),
 			headers: {
 				Authorization: 'Bearer ' + (await (getAuth().currentUser?.getIdToken(true) ?? ''))
 			}
@@ -53,10 +53,9 @@
 	}
 
 	async function nextPhase() {
-		await fetch('/api/game/start', {
+		await fetch(`/api/game/${$gameId}/start`, {
 			method: 'POST',
 			body: JSON.stringify({
-				gameId: $gameId,
 				phase: 'select'
 			}),
 			headers: {
@@ -79,7 +78,7 @@
 	async function loadDescriptions() {
 		let token = await getAuth().currentUser?.getIdToken(true);
 
-		await fetch(`/api/game/prompt?gameId=${$gameId}`, {
+		await fetch(`/api/game/${$gameId}/prompt`, {
 			headers: {
 				Authorization: 'Bearer ' + token
 			}

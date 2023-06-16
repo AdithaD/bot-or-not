@@ -1,17 +1,24 @@
 import type { Game, Phase } from '$lib/game';
+import { validateTokenAsOwner as validateGameRequestAsOwner } from '$lib/server/firebase.js';
 import { moveToChat, moveToPrompt, moveToReveal, moveToSelect } from '$lib/server/game';
 import { json } from '@sveltejs/kit';
-import { getAuth } from 'firebase-admin/auth';
 import { getDatabase } from 'firebase-admin/database';
 
 export type GameStartRequestBody = {
-	gameId: string;
 	phase: Phase;
 };
 
-export async function POST({ request }): Promise<Response> {
-	let { gameId, phase }: GameStartRequestBody = await request.json();
+export async function POST({ request, params }): Promise<Response> {
+	let { phase }: GameStartRequestBody = await request.json();
 	let database = getDatabase();
+
+	let gameId = params.slug;
+
+	try {
+		await validateGameRequestAsOwner(request, gameId);
+	} catch (error: any) {
+		return error.response;
+	}
 
 	let game = (await database
 		.ref(`games/${gameId}`)
@@ -19,18 +26,6 @@ export async function POST({ request }): Promise<Response> {
 		.then((snapshot) => snapshot.val())) as Game;
 
 	if (game == null) return json({ error: 'Game does not exist' }, { status: 404 });
-
-	let ownerId: string | null = null;
-	try {
-		let decoded = await getAuth().verifyIdToken(
-			request.headers.get('Authorization')?.split(' ')[1] ?? ''
-		);
-		ownerId = decoded.uid;
-	} catch (error) {
-		return json({ error: 'Invalid token' }, { status: 403 });
-	}
-	if (ownerId && game.owner != ownerId)
-		return json({ error: 'You are not the owner of this game' }, { status: 403 });
 
 	switch (phase) {
 		case 'prompt':
@@ -42,6 +37,4 @@ export async function POST({ request }): Promise<Response> {
 		default:
 			return json({ error: 'Invalid phase' }, { status: 400 });
 	}
-
-	return json({}, { status: 200 });
 }

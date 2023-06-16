@@ -1,4 +1,5 @@
 import type { EnumeratedObject, TargetedObject } from '$lib/game';
+import { validateGameRequestAsUser } from '$lib/server/firebase.js';
 import { amountOfPromptsPerPlayer } from '$lib/server/game';
 import { json } from '@sveltejs/kit';
 import { getAuth } from 'firebase-admin/auth';
@@ -7,16 +8,14 @@ import log from 'loglevel';
 
 const maxPromptLength = 150;
 
-export async function GET({ request, url }): Promise<Response> {
-	let token = request.headers.get('Authorization')?.split(' ')[1] ?? '';
-	let gameId = url.searchParams.get('gameId') ?? '';
+export async function GET({ request, params }): Promise<Response> {
+	let gameId = params.slug;
 
 	let uid: string;
 	try {
-		let decoded = await getAuth().verifyIdToken(token);
-		uid = decoded.uid;
-	} catch (error) {
-		return json({ error: 'Invalid token' }, { status: 403 });
+		uid = await validateGameRequestAsUser(request, gameId);
+	} catch (error: any) {
+		return error.response;
 	}
 
 	try {
@@ -38,11 +37,12 @@ export async function GET({ request, url }): Promise<Response> {
 	}
 }
 
-export async function POST({ request }) {
-	let { gameId, prompts } = (await request.json()) as {
-		gameId: string;
+export async function POST({ request, params }) {
+	let { prompts } = (await request.json()) as {
 		prompts: { [targetId: string]: string };
 	};
+
+	let gameId = params.slug;
 
 	let token = request.headers.get('Authorization')?.split(' ')[1] ?? '';
 

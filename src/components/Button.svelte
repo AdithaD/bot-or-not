@@ -5,7 +5,7 @@
 </script>
 
 <button
-	class="{expandh
+	class="whitespace-nowrap {expandh
 		? 'h-full'
 		: ''} p-2 w-full border-2 border-black font-bold text-black rounded-xl shadow-md {!disabled
 		? 'bg-green-400 hover:translate-y-0.5 transition-transform'

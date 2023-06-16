@@ -1,50 +1,55 @@
 <script>
-	import Button from '../components/Button.svelte';
-	import Chat from './Chat.svelte';
-	import Lobby from './Lobby.svelte';
+	import Section from 'components/Section.svelte';
 	import Pregame from './Pregame.svelte';
-	import Prompt from './Prompt.svelte';
-	import Reveal from './Reveal.svelte';
-	import Select from './Select.svelte';
 </script>
 
-<div class="min-h-screen flex flex-col">
-	<header
-		class="shadow-md border-b-4 border-primary bg-green-300 w-full p-4 text-center flex justify-between relative"
+<div class="flex-grow flex flex-col justify-center py-8">
+	<main
+		class="w-4/5 xl:w-2/3 self-center flex flex-col xl:flex-row space-y-4 lg:space-y-0 lg:space-x-4 items-center"
 	>
-		<div />
-		<h1 class="font-bold text-2xl">Bot or Not</h1>
-		<div />
-		<div
-			class="absolute right-4 top-3 border-2 border-black rounded-xl hover:scale-105 transition transition-transform"
-		>
-			<a href="https://www.buymeacoffee.com/adithad">
-				<img
-					src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=&slug=adithad&button_colour=40DCA5&font_colour=ffffff&font_family=Lato&outline_colour=000000&coffee_colour=FFDD00"
-					alt="buy me a coffee"
-					class="h-10"
-				/>
-			</a>
-		</div>
-	</header>
-	<main class="p-8 lg:grid lg:grid-rows-4 lg:gap-8 w-full flex-grow space-y-8 lg:space-y-0">
-		<div class="">
-			<Pregame />
-		</div>
-		<div>
-			<Lobby />
-		</div>
-		<div>
-			<Prompt />
-		</div>
-		<div>
-			<Select />
-		</div>
-		<div class="col-span-2">
-			<Chat />
-		</div>
-		<div class="col-span-3 row-span-2">
-			<Reveal />
-		</div>
+		<Pregame />
+		<Section>
+			<h1 class="font-bold text-2xl mb-2">📢 Attention - Public Service Announcement 📢</h1>
+			<h2 class="font-semibold text-xl">
+				There's a 50% chance your friend is a bot 😰.<a
+					class="text-sm text-blue-400 align-top"
+					href="https://www.youtube.com/watch?v=iOVbAmknKUk?autoplay=1">^1</a
+				>
+			</h2>
+			<p>
+				In a recent study (n=me) conducted on my favourite <a
+					class=" text-green-600 font-bold"
+					href="https://chat.openai.com">social network</a
+				>, I found that <b class="">100% 😬 </b>of my new friends were actually
+				<b class="text-green-600">bots</b>. They exhibited the following bot-like indicators:
+			</p>
+			<ul class="list-disc list-inside">
+				<li>
+					responding with <b class="text-green-600">more than</b> just 'k', '...', 'please stop talking
+					to me', 'this user has blocked you' 🚫
+				</li>
+				<li>
+					being willing to hold a conversation with me for <b class="text-green-600"
+						>more than 1 minute
+					</b>⏰
+				</li>
+				<li><b class="text-green-600"> not </b> leaving me on read 🔍</li>
+			</ul>
+			<p>
+				I'm not sure what to do about this 😥, but I'm sure it's a <b class="text-green-600"
+					>problem
+				</b>😨. I'm willing to take the first step 💪, but I need more data 👩‍💻 on human - human and
+				human - bot interactions. However, recent litigation 👩‍⚖️ has made it difficult for me to
+				observe my fellow humans from <b class="text-green-600">within 250m </b>📏.
+			</p>
+			<h1 class="font-bold text-2xl mb-2">
+				But <b class="text-green-600">you </b> can help! 🤝 🤗❤
+			</h1>
+			<h2 class="font-semibold text-xl">
+				Participate in this <b class="text-green-600">controlled experiment </b> and help me collect
+				the necessary data 🤓.
+			</h2>
+			<p class="text-xs text-gray-400">I want real friends 😢</p>
+		</Section>
 	</main>
 </div>

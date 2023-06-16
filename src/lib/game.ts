@@ -1,10 +1,12 @@
+import { goto } from '$app/navigation';
+import log from 'loglevel';
 import { v4 as uuidv4 } from 'uuid';
+import { gameId, user } from './stores';
 
 export type TargetedObject<T> = { [uid: string]: { [targetUid: string]: T } };
 export type EnumeratedObject<T> = { [_: string]: T };
 
 export type JoinRequestBody = {
-	gameId: string;
 	user: User;
 };
 export type Game = {
@@ -114,4 +116,28 @@ export function createNewGame(): Game {
 		privateState: { prompts: {}, chatSelection: {}, chatTypes: {}, decisions: {} },
 		userState: {}
 	};
+}
+
+export async function sendJoinRequest(body: JoinRequestBody, gameIdToJoin: string) {
+	await fetch(`/api/game/${gameIdToJoin}/user`, {
+		method: 'POST',
+		body: JSON.stringify(body)
+	}).then(async (res) => {
+		let resBody = await res.json();
+		log.log(`Joined game ${resBody.gameId}`);
+		gameId.set(resBody.gameId);
+		user.set(resBody.user);
+	});
+}
+
+export function validateUsername(desiredUsername: string) {
+	if (!desiredUsername || desiredUsername.length < 1) {
+		alert('Please enter a username');
+		return false;
+	}
+	if (desiredUsername.length > 20) {
+		alert('Username must be less than 20 characters');
+		return false;
+	}
+	return true;
 }

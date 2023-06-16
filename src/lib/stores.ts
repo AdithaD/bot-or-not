@@ -11,11 +11,13 @@ if (browser) {
 	gameId.set(JSON.parse(sessionStorage.getItem('gameId') || 'null'));
 
 	user.subscribe((value) => {
-		sessionStorage.setItem('user', JSON.stringify(value));
+		if (!value) sessionStorage.removeItem('user');
+		else sessionStorage.setItem('user', JSON.stringify(value));
 	});
 
 	gameId.subscribe((value) => {
-		sessionStorage.setItem('gameId', JSON.stringify(value));
+		if (!value) sessionStorage.removeItem('gameId');
+		else sessionStorage.setItem('gameId', JSON.stringify(value));
 	});
 
 	isOwner = createFirebaseReadableStore<boolean>(`/owner`, (val) => val == storeGet(user)?.uid);

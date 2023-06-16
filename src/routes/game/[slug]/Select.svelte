@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { users, user, gameId, phase } from '$lib/stores';
 	import { get, getDatabase, ref } from 'firebase/database';
-	import Section from '../components/Section.svelte';
-	import ToggleButton from '../components/ToggleButton.svelte';
-	import Button from '../components/Button.svelte';
+	import Section from 'components/Section.svelte';
+	import ToggleButton from 'components/ToggleButton.svelte';
+	import Button from 'components/Button.svelte';
 	import { getAuth } from 'firebase/auth';
-	import PhasedContent from '../components/PhasedContent.svelte';
+	import PhasedContent from 'components/PhasedContent.svelte';
 
 	let amountOfPlayers = 0;
 	let selected = true;
@@ -28,7 +28,7 @@
 
 	async function sendSelections() {
 		const selectedUids = Object.keys(buttons).filter((uid) => buttons[uid]);
-		await fetch(`/api/game/select`, {
+		await fetch(`/api/game/${$gameId}/select`, {
 			method: 'POST',
 			body: JSON.stringify({
 				gameId: $gameId,

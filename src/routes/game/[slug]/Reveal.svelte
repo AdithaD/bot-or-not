@@ -5,10 +5,9 @@
 	import { gameId, users } from '$lib/stores';
 	import { getDatabase, onValue, ref } from 'firebase/database';
 	import { onDestroy } from 'svelte';
-	import Border from '../components/Border.svelte';
-	import Button from '../components/Button.svelte';
-	import PhasedContent from '../components/PhasedContent.svelte';
-	import Section from '../components/Section.svelte';
+	import Button from 'components/Button.svelte';
+	import PhasedContent from 'components/PhasedContent.svelte';
+	import Section from 'components/Section.svelte';
 
 	let unsubscribe: Function | null = null;
 	let storeUnsubscribe: Function | null = null;
@@ -32,9 +31,8 @@
 		if (storeUnsubscribe != null) storeUnsubscribe();
 	});
 
-	function getFooled(uid: string, target: string) {
-		return revealData?.[uid]?.[target]?.truth != revealData?.[uid]?.[target].decision;
-	}
+	// TODO: Implement play again functionality.
+	function playAgain() {}
 </script>
 
 <Section>
@@ -57,7 +55,7 @@
 					{/each}
 				</div>
 				<div class="text-xl h-20">
-					<Button>Play again! 😝</Button>
+					<Button click={playAgain}>Play again! 😝</Button>
 				</div>
 			</div>
 		{/if}

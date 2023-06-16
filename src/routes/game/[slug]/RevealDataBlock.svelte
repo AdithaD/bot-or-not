@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { User, UserTargetRevealData } from '$lib/game';
 	import { user, users } from '$lib/stores';
-	import Border from '../components/Border.svelte';
+	import Border from 'components/Border.svelte';
 
 	export let revealData: UserTargetRevealData;
 	export let target: User;

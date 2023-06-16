@@ -1,15 +1,24 @@
+import { validateGameRequestAsUser } from '$lib/server/firebase.js';
 import { moveToChat } from '$lib/server/game.js';
 import { json } from '@sveltejs/kit';
 import { getAuth } from 'firebase-admin/auth';
 import { getDatabase } from 'firebase-admin/database';
 
-export async function POST({ request }) {
-	let { gameId, selectedUids } = (await request.json()) as {
-		gameId: string;
+export async function POST({ request, params }) {
+	let { selectedUids } = (await request.json()) as {
 		selectedUids: string[];
 	};
 
+	let gameId = params.slug;
+
 	let database = getDatabase();
+
+	let uid: string;
+	try {
+		uid = await validateGameRequestAsUser(request, gameId);
+	} catch (error: any) {
+		return error.response;
+	}
 
 	let chatsPerPlayer = (
 		await database.ref(`games/${gameId}/publicState/chatsPerPlayer`).get()
@@ -19,16 +28,6 @@ export async function POST({ request }) {
 
 	if (selectedUids.length != chatsPerPlayer)
 		return json({ error: 'Invalid number of players' }, { status: 400 });
-
-	let uid: string | null = null;
-	try {
-		let decoded = await getAuth().verifyIdToken(
-			request.headers.get('Authorization')?.split(' ')[1] ?? ''
-		);
-		uid = decoded.uid;
-	} catch (error) {
-		return json({ error: 'Invalid token' }, { status: 403 });
-	}
 
 	let enumerated = selectedUids.reduce<{ [uid: string]: boolean }>((acc, uid) => {
 		acc[uid] = true;

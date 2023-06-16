@@ -1,17 +1,17 @@
 <script lang="ts">
-	import Border from '../components/Border.svelte';
+	import Border from 'components/Border.svelte';
 
 	import { gameId, isOwner, user, users } from '$lib/stores';
 	import { getAuth } from 'firebase/auth';
-	import Button from '../components/Button.svelte';
-	import FirebaseChatBox from '../components/FirebaseChatBox.svelte';
-	import PhasedContent from '../components/PhasedContent.svelte';
-	import Section from '../components/Section.svelte';
+	import Button from 'components/Button.svelte';
+	import FirebaseChatBox from 'components/FirebaseChatBox.svelte';
+	import PhasedContent from 'components/PhasedContent.svelte';
+	import Section from 'components/Section.svelte';
 
 	$: _users = Object.values($users || {});
 
 	async function startGame() {
-		fetch(`/api/game/start`, {
+		fetch(`/api/game/${$gameId}/start`, {
 			method: 'POST',
 			body: JSON.stringify({
 				gameId: $gameId,

@@ -1,14 +1,14 @@
 <script lang="ts">
-	import ToggleButton from '../components/ToggleButton.svelte';
+	import ToggleButton from 'components/ToggleButton.svelte';
 
 	import type { ChatData } from '$lib/game';
 	import { gameId, phase, user, users } from '$lib/stores';
 	import { get, getDatabase, onValue, ref, set, update } from 'firebase/database';
 	import { onDestroy } from 'svelte';
-	import FirebaseChatBox from '../components/FirebaseChatBox.svelte';
-	import PhasedContent from '../components/PhasedContent.svelte';
-	import Section from '../components/Section.svelte';
-	import Button from '../components/Button.svelte';
+	import FirebaseChatBox from 'components/FirebaseChatBox.svelte';
+	import PhasedContent from 'components/PhasedContent.svelte';
+	import Section from 'components/Section.svelte';
+	import Button from 'components/Button.svelte';
 	import { getAuth } from 'firebase/auth';
 
 	let userChats: ChatData | null = null;
@@ -58,14 +58,13 @@
 	async function sendDecision(targetUid: string) {
 		if (decisions[targetUid] == null) decisions[targetUid] = false;
 
-		fetch(`/api/game/decision`, {
+		fetch(`/api/game/${gameId}/decision`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
 				Authorization: `Bearer ${await getAuth().currentUser?.getIdToken(true)}`
 			},
 			body: JSON.stringify({
-				gameId: $gameId,
 				targetUid,
 				decision: decisions[targetUid]
 			})
@@ -77,7 +76,7 @@
 	}
 
 	async function getDecisionsState() {
-		fetch(`/api/game/decision?gameId=${$gameId}`, {
+		fetch(`/api/game/${gameId}/decision`, {
 			headers: {
 				Authorization: `Bearer ${await getAuth().currentUser?.getIdToken(true)}`
 			}
