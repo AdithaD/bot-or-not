@@ -58,7 +58,7 @@
 	async function sendDecision(targetUid: string) {
 		if (decisions[targetUid] == null) decisions[targetUid] = false;
 
-		fetch(`/api/game/${gameId}/decision`, {
+		fetch(`/api/game/${$gameId}/decision`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
@@ -76,7 +76,7 @@
 	}
 
 	async function getDecisionsState() {
-		fetch(`/api/game/${gameId}/decision`, {
+		fetch(`/api/game/${$gameId}/decision`, {
 			headers: {
 				Authorization: `Bearer ${await getAuth().currentUser?.getIdToken(true)}`
 			}
