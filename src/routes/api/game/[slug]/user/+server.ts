@@ -26,37 +26,33 @@ export async function POST({ request, params }) {
 	let database = getDatabase();
 	let users = (await database.ref(`games/${gameId}/users`).get()).val() as { [uid: string]: User };
 
-	if (users) {
-		if (users == null || Object.keys(users).length < maxUsers) {
-			console.log(JSON.stringify(uid));
-			let userRef = database.ref(`games/${gameId}/users/${uid}`);
+	if (users == null || Object.keys(users).length < maxUsers) {
+		console.log(JSON.stringify(uid));
+		let userRef = database.ref(`games/${gameId}/users/${uid}`);
 
-			try {
-				const dbUser = (await userRef.get()).val();
-				if (dbUser) {
-					return json({ gameId, dbUser, error: 'User already exists' }, { status: 409 });
-				} else {
-					await userRef.set(user);
-					log.info(`GAME ${gameId}: USER ${user.uid} - ${user.username} joined.`);
+		try {
+			const dbUser = (await userRef.get()).val();
+			if (dbUser) {
+				return json({ gameId, dbUser, error: 'User already exists' }, { status: 409 });
+			} else {
+				await userRef.set(user);
+				log.info(`GAME ${gameId}: USER ${user.uid} - ${user.username} joined.`);
 
-					let owner = (await database.ref(`games/${gameId}/owner`).get()).val();
+				let owner = (await database.ref(`games/${gameId}/owner`).get()).val();
 
-					if (!owner) {
-						let ownerRef = database.ref(`games/${gameId}/owner`);
-						await ownerRef.set(user.uid);
-						log.info(`GAME ${gameId}: USER ${user.uid} - ${user.username} is the owner.`);
-					}
+				if (!owner) {
+					let ownerRef = database.ref(`games/${gameId}/owner`);
+					await ownerRef.set(user.uid);
+					log.info(`GAME ${gameId}: USER ${user.uid} - ${user.username} is the owner.`);
 				}
-			} catch (e) {
-				log.error(e);
-				return json({ error: 'Error joining game' }, { status: 500 });
 			}
-
-			return json({ gameId, user }, { status: 201 });
-		} else {
-			return json({ error: 'Game is full' }, { status: 400 });
+		} catch (e) {
+			log.error(e);
+			return json({ error: 'Error joining game' }, { status: 500 });
 		}
+
+		return json({ gameId, user }, { status: 201 });
 	} else {
-		return json({ error: 'Game does not exist' }, { status: 404 });
+		return json({ error: 'Game is full' }, { status: 400 });
 	}
 }

@@ -28,7 +28,7 @@
 				};
 
 				await sendJoinRequest(body, id)
-					.then(() => goto(`/game/${gameIDInput}`))
+					.then(() => goto(`/game/${id}`))
 					.catch(log.error);
 			}
 		});
