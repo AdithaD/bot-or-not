@@ -40,19 +40,17 @@ export async function validateGameRequestAsUser(request: Request, gameId: string
 }
 
 export async function validateTokenAsOwner(request: Request, gameId: string): Promise<string> {
-	try {
-		let decoded = await getAuth().verifyIdToken(
-			request.headers.get('Authorization')?.split(' ')[1] ?? ''
-		);
+	let decoded = await getAuth()
+		.verifyIdToken(request.headers.get('Authorization')?.split(' ')[1] ?? '')
+		.catch(() => {
+			throw { response: json({ error: 'Invalid token' }, { status: 403 }) };
+		});
 
-		let uid = decoded.uid;
+	let uid = decoded.uid;
 
-		let users = (await database.ref(`games/${gameId}/owner`).get()).val();
-		if (users == null || users[uid] == null)
-			throw { response: json({ error: 'You are not the owner of this game.' }, { status: 403 }) };
+	let owner = (await database.ref(`games/${gameId}/owner`).get()).val();
+	if (owner == null || owner != uid)
+		throw { response: json({ error: 'You are not the owner of this game.' }, { status: 403 }) };
 
-		return decoded.uid;
-	} catch (error) {
-		throw { response: json({ error: 'Invalid token' }, { status: 403 }) };
-	}
+	return decoded.uid;
 }
