@@ -18,7 +18,8 @@ import { json } from '@sveltejs/kit';
 import { ServerValue, getDatabase, type Database } from 'firebase-admin/database';
 import { aiTurn } from './bot';
 import log from 'loglevel';
-const chatTime = 10;
+import { env } from '$env/dynamic/private';
+const chatTime = env.CHAT_TIME ?? 60;
 export const amountOfPromptsPerPlayer = 2;
 const chatsPerPlayer: { [playerCount: number]: number } = {
 	3: 1,
