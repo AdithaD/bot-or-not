@@ -1,4 +1,6 @@
 <script lang="ts">
+	import RevealDataBlock from './RevealDataBlock.svelte';
+
 	import type { RevealData } from '$lib/game';
 	import { gameId, users } from '$lib/stores';
 	import { getDatabase, onValue, ref } from 'firebase/database';
@@ -47,60 +49,15 @@
 							<div class="flex flex-col space-y-4">
 								{#each Object.keys(revealData[uid]) as target}
 									{#if revealData[uid][target] != null && $users[target]}
-										<div class="flex justify-between">
-											<h3 class="font-semibold text-xl mb-4">
-												talked to <span class="text-3xl"
-													>{revealData[uid][target].truth ? '🤖' : '🧍'}</span
-												>
-												{$users[target].username}
-											</h3>
-											<div class="text-2xl font-semibold">
-												{#if getFooled(uid, target)}
-													<h3>They were <b class="text-green-600">FOOLED 🥴</b></h3>
-												{:else}
-													<h3>They saw the <b class="text-blue-600">TRUTH 😎</b></h3>
-												{/if}
-											</div>
-										</div>
-										<div class="flex justify-between space-x-2">
-											{#each Object.values(revealData[uid][target].prompts) as prompt, i}
-												<div class="text-start w-full h-fit">
-													<p class="font-bold">
-														Prompt {i + 1}
-													</p>
-													<Border>
-														<div class="text-sm font-semibold p-2">
-															{prompt}
-														</div>
-													</Border>
-												</div>
-											{/each}
-										</div>
-										<div class="flex-grow">
-											<div class="h-full">
-												{#if revealData[uid][target]?.messages?.messages}
-													<Border>
-														<div class="overflow-y-auto p-2">
-															{#each Object.values(revealData[uid][target].messages.messages) as message}
-																<div class="p-1 font-bold">
-																	{$users[message.uid]?.username ?? 'Unknown user'}: {message.content}
-																</div>
-															{/each}
-														</div>
-													</Border>
-												{:else}
-													<div class="p-2">No messages 😴.</div>
-												{/if}
-											</div>
-										</div>
+										<RevealDataBlock revealData={revealData[uid][target]} target={$users[target]} />
 									{/if}
 								{/each}
 							</div>
 						</div>
 					{/each}
 				</div>
-				<div class="">
-					<Button>Play again!</Button>
+				<div class="text-xl h-20">
+					<Button>Play again! 😝</Button>
 				</div>
 			</div>
 		{/if}

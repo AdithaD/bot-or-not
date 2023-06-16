@@ -24,7 +24,7 @@
 
 	$: amountOfCheckedButtons = Object.values(buttons).filter((button) => button).length;
 
-	$: otherUsers = $user ? Object.keys(buttons).filter((uid) => uid != $user?.uid) : [];
+	$: otherUsers = $user ? Object.keys($users ?? {}).filter((uid) => uid != $user?.uid) : [];
 
 	async function sendSelections() {
 		const selectedUids = Object.keys(buttons).filter((uid) => buttons[uid]);
@@ -50,7 +50,7 @@
 	<PhasedContent phase="select">
 		<div class="space-y-16">
 			<div class="font-bold text-xl">Select {amountOfPlayers} players 😉 to chat to:</div>
-			<div class=" space-y-4">
+			<div class=" space-y-2">
 				{#if $users && $user != null}
 					{#each otherUsers as target}
 						<ToggleButton
@@ -65,7 +65,7 @@
 				{/if}
 			</div>
 		</div>
-		<div class="flex-grow" />
+		<div class="flex-grow mt-4" />
 		<div>
 			<Button
 				click={sendSelections}

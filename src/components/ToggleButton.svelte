@@ -8,7 +8,7 @@
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <div
-	class="block p-2 {disabled || confirmed ? 'bg-green-200' : ''} {checked
+	class="block border-black border-2 p-2 {disabled || confirmed ? 'bg-green-200' : ''} {checked
 		? ` ${toggledColour}`
 		: 'bg-green-500'} hover:translate-y-0.5 transition-[transform,colors] text-white font-bold rounded-xl text-center"
 	on:click={() => {

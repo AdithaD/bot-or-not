@@ -18,9 +18,6 @@
 		targets = Object.keys(userChats ?? {});
 	}
 
-	let unsubscribe: Function | null = null;
-	let storeUnsubscribe: Function | null = null;
-
 	let decisions: { [target: string]: boolean } = {};
 	let disabled: { [target: string]: boolean } = {};
 
@@ -54,20 +51,8 @@
 		}
 	});
 
-	storeUnsubscribe = gameId.subscribe((gameId) => {
-		if (unsubscribe != null) unsubscribe();
-
-		unsubscribe = onValue(
-			ref(getDatabase(), `games/${gameId}/userState/${$user?.uid}/chats`),
-			(snapshot) => {
-				userChats = snapshot.val();
-			}
-		);
-	});
-
-	onDestroy(() => {
-		if (unsubscribe != null) unsubscribe();
-		if (storeUnsubscribe != null) storeUnsubscribe();
+	onValue(ref(getDatabase(), `games/${$gameId}/userState/${$user?.uid}/chats`), (snapshot) => {
+		userChats = snapshot.val();
 	});
 
 	async function sendDecision(targetUid: string) {
