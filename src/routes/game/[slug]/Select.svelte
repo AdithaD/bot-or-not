@@ -6,6 +6,7 @@
 	import Button from 'components/Button.svelte';
 	import { getAuth } from 'firebase/auth';
 	import PhasedContent from 'components/PhasedContent.svelte';
+	import { addToast } from '$lib/toasts';
 
 	let amountOfPlayers = 0;
 	let selected = true;
@@ -40,6 +41,9 @@
 		}).then((res) => {
 			if (res.ok) {
 				selected = true;
+				addToast('Submitted Selections 😊', 'success');
+			} else {
+				addToast("Couldn't submit selections 😓", 'success');
 			}
 		});
 	}

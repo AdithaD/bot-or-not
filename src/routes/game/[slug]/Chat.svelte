@@ -10,6 +10,7 @@
 	import Section from 'components/Section.svelte';
 	import Button from 'components/Button.svelte';
 	import { getAuth } from 'firebase/auth';
+	import { addToast } from '$lib/toasts';
 
 	let userChats: ChatData | null = null;
 
@@ -71,7 +72,10 @@
 			})
 		}).then(async (response) => {
 			if (response.ok) {
+				addToast('Decision sent!', 'success');
 				getDecisionsState();
+			} else {
+				addToast("Couldn't send decision ✉!", 'error');
 			}
 		});
 	}

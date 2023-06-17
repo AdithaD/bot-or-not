@@ -1,8 +1,9 @@
 <script>
+	import Toaster from 'components/Toaster.svelte';
 	import '../app.css';
 </script>
 
-<div class="appearance bg-green-400 min-h-screen flex flex-col">
+<div class="appearance bg-green-400 min-h-screen flex flex-col relative overflow-x-hidden">
 	<header
 		class="shadow-md border-b-4 border-primary bg-green-300 w-full p-4 text-center flex justify-between relative"
 	>
@@ -29,4 +30,5 @@
 			</div>
 		</div>
 	</footer>
+	<Toaster />
 </div>

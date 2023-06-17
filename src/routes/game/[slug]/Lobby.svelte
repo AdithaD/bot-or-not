@@ -7,11 +7,12 @@
 	import FirebaseChatBox from 'components/FirebaseChatBox.svelte';
 	import PhasedContent from 'components/PhasedContent.svelte';
 	import Section from 'components/Section.svelte';
+	import { addToast, toasts } from '$lib/toasts';
 
 	$: _users = Object.values($users || {});
 
 	async function startGame() {
-		fetch(`/api/game/${$gameId}/start`, {
+		await fetch(`/api/game/${$gameId}/start`, {
 			method: 'POST',
 			body: JSON.stringify({
 				gameId: $gameId,
@@ -19,6 +20,12 @@
 			}),
 			headers: {
 				Authorization: 'Bearer ' + (await getAuth().currentUser?.getIdToken(true))
+			}
+		}).then((res) => {
+			if (res.status == 200) {
+				addToast('Game started!', 'success');
+			} else {
+				addToast('Failed to start game.', 'error');
 			}
 		});
 	}

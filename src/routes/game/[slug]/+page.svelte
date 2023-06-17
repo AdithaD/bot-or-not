@@ -1,16 +1,17 @@
 <script lang="ts">
+	import { sendJoinRequest, validateUsername, type JoinRequestBody } from '$lib/game';
 	import { gameId, user } from '$lib/stores';
+	import Button from 'components/Button.svelte';
+	import Section from 'components/Section.svelte';
 	import TextInput from 'components/TextInput.svelte';
+	import { getAuth, signInAnonymously } from 'firebase/auth';
 	import Chat from './Chat.svelte';
 	import Lobby from './Lobby.svelte';
 	import Prompt from './Prompt.svelte';
 	import Reveal from './Reveal.svelte';
 	import Select from './Select.svelte';
-	import Button from 'components/Button.svelte';
-	import { sendJoinRequest, validateUsername, type JoinRequestBody } from '$lib/game';
-	import { getAuth, signInAnonymously } from 'firebase/auth';
-	import { validate } from 'uuid';
-	import Section from 'components/Section.svelte';
+	import { onMount } from 'svelte';
+	import { addToast } from '$lib/toasts';
 
 	export let data;
 
@@ -33,7 +34,7 @@
 					{ user: { uid, username: desiredUsername } } as JoinRequestBody,
 					data.gameId
 				);
-				console.log('joined game');
+				addToast('Joined experiment 🤓!', 'success');
 			}
 		}
 	}

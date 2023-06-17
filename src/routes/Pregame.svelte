@@ -8,11 +8,13 @@
 	import TextInput from '../components/TextInput.svelte';
 	import { redirect } from '@sveltejs/kit';
 	import { goto } from '$app/navigation';
+	import { addToast } from '$lib/toasts';
 
 	let gameIDInput = '';
 	let desiredUsername = '';
 
 	async function createGame() {
+		addToast('Starting game...', 'info');
 		if (!desiredUsername || desiredUsername.length < 1) return alert('Please enter a username');
 
 		fetch('/api/new', { method: 'POST' }).then(async (res) => {
@@ -27,8 +29,12 @@
 					}
 				};
 
+				addToast('Created experiment 🧪!', 'success');
 				await sendJoinRequest(body, id)
-					.then(() => goto(`/game/${id}`))
+					.then(() => {
+						addToast('Joined experiment 🤓!', 'success');
+						goto(`/game/${id}`);
+					})
 					.catch(log.error);
 			}
 		});
@@ -50,7 +56,11 @@
 				}
 			};
 			await sendJoinRequest(body, gameIDInput)
-				.then(() => goto(`/game/${gameIDInput}`))
+				.then(() => {
+					goto(`/game/${gameIDInput}`);
+
+					addToast('Joined experiment 🤓!', 'success');
+				})
 				.catch(log.error);
 		}
 	}

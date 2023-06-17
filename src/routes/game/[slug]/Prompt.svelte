@@ -8,6 +8,7 @@
 	import Button from 'components/Button.svelte';
 	import PhasedContent from 'components/PhasedContent.svelte';
 	import Section from 'components/Section.svelte';
+	import { addToast } from '$lib/toasts';
 
 	let unsubscribe: Function | null = null;
 	let storeUnsubscribe: Function | null = null;
@@ -45,13 +46,15 @@
 
 	// TODO: Disable chatboxes on submit.
 	async function submit() {
-		fetch(`/api/game/${$gameId}/prompt`, {
+		await fetch(`/api/game/${$gameId}/prompt`, {
 			method: 'POST',
 			body: JSON.stringify({ prompts: descriptions }),
 			headers: {
 				Authorization: 'Bearer ' + (await (getAuth().currentUser?.getIdToken(true) ?? ''))
 			}
-		});
+		})
+			.then(() => addToast('Submitted Prompt', 'success'))
+			.catch(() => addToast('Failed to submit prompt 😭', 'error'));
 	}
 
 	// TODO: Show who has submitted their descriptions.
@@ -68,14 +71,14 @@
 		})
 			.then(async (response) => {
 				if (response.ok) {
-					console.log('moving to chat phase');
+					addToast('Moved to Chat Phase', 'success');
 				} else {
-					alert((await response.json()).error ?? 'Unknown Error');
+					addToast('Unknown Error 😫🤯', 'error');
 				}
 			})
 			.catch((e) => {
 				console.error(e);
-				alert('Network Error');
+				addToast('Network Error 🤯', 'error');
 			});
 	}
 
@@ -102,7 +105,6 @@
 					});
 				}
 			})
-
 			.catch((e) => {
 				descriptions = {};
 			});
