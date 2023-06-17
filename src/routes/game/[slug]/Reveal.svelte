@@ -2,12 +2,13 @@
 	import RevealDataBlock from './RevealDataBlock.svelte';
 
 	import type { RevealData } from '$lib/game';
-	import { gameId, users } from '$lib/stores';
+	import { gameId, user, users } from '$lib/stores';
 	import { getDatabase, onValue, ref } from 'firebase/database';
 	import { onDestroy } from 'svelte';
 	import Button from 'components/Button.svelte';
 	import PhasedContent from 'components/PhasedContent.svelte';
 	import Section from 'components/Section.svelte';
+	import { goto } from '$app/navigation';
 
 	let unsubscribe: Function | null = null;
 	let storeUnsubscribe: Function | null = null;
@@ -35,6 +36,10 @@
 	function playAgain() {}
 
 	// TODO: Back to main menu functionality.
+	function backToMenu() {
+		gameId.set(null);
+		goto('/');
+	}
 </script>
 
 <Section>
@@ -56,8 +61,9 @@
 						</div>
 					{/each}
 				</div>
-				<div class="text-xl h-20">
-					<Button click={playAgain}>Play again! 😝</Button>
+				<div class="text-xl h-20 flex space-x-4">
+					<Button click={playAgain}>Start another trial! 🔬</Button>
+					<Button click={backToMenu}>Back to Homepage 🏠</Button>
 				</div>
 			</div>
 		{/if}

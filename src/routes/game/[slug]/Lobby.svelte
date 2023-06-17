@@ -23,7 +23,6 @@
 		});
 	}
 
-	// TODO: Remove players from lobby.
 	async function removeUser(uid: string) {
 		if (uid == null) return;
 		if ($userStore?.uid == uid) alert('You cannot remove yourself from the game. 🤦‍♀️');

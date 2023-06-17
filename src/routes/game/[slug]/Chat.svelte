@@ -28,7 +28,7 @@
 	}
 
 	// TODO: Make timer more visible.
-	let timeRemaining = 60;
+	let timeRemaining = 15;
 	let serverTimeOffset = 0;
 
 	onValue(ref(getDatabase(), '.info/serverTimeOffset'), (snapshot) => {
@@ -95,9 +95,15 @@
 </script>
 
 <Section>
-	<div class="flex w-full justify-between">
+	<div class="flex w-full justify-between relative">
 		<h1 class="font-bold text-2xl mb-8">Chat 💬 🤖/🕴</h1>
-		<h1 class="font-bold text-2xl mb-8">{timeRemaining}</h1>
+		<h1
+			class="font-bold text-4xl lg:text-7xl mb-8 absolute right-0 {timeRemaining < 15
+				? 'text-red-500'
+				: 'text-black'}"
+		>
+			{timeRemaining}
+		</h1>
 	</div>
 	<PhasedContent phase="chat">
 		<div class="lg:grid lg:grid-cols-2 space-y-6 overflow-y-auto flex-grow pb-2">

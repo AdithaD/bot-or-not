@@ -25,8 +25,8 @@ export async function POST({ request, params }) {
 
 // Get decision
 
-export async function GET({ request, url }) {
-	let gameId = url.searchParams.get('gameId') ?? '';
+export async function GET({ request, params }) {
+	let gameId = params.slug;
 
 	if (gameId == null) return json({ error: 'Invalid request' }, { status: 400 });
 
@@ -43,6 +43,8 @@ export async function GET({ request, url }) {
 	let decisions = (
 		await getDatabase().ref(`games/${gameId}/privateState/decisions/${uid}`).get()
 	).val();
+
+	console.log(`Getting decisions for ${uid} in game ${gameId}: ${decisions}`);
 
 	return json({ decisions }, { status: 200 });
 }
