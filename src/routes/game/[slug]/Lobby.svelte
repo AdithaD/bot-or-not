@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Border from 'components/Border.svelte';
 
-	import { gameId, isOwner, user, users } from '$lib/stores';
+	import { gameId, isOwner, user as userStore, users } from '$lib/stores';
 	import { getAuth } from 'firebase/auth';
 	import Button from 'components/Button.svelte';
 	import FirebaseChatBox from 'components/FirebaseChatBox.svelte';
@@ -19,6 +19,19 @@
 			}),
 			headers: {
 				Authorization: 'Bearer ' + (await getAuth().currentUser?.getIdToken(true))
+			}
+		});
+	}
+
+	// TODO: Remove players from lobby.
+	async function removeUser(uid: string) {
+		if (uid == null) return;
+		if ($userStore?.uid == uid) alert('You cannot remove yourself from the game. 🤦‍♀️');
+
+		await fetch(`/api/game/${$gameId}/user/${uid}`, {
+			method: 'DELETE',
+			headers: {
+				Authorization: 'Bearer ' + ((await getAuth().currentUser?.getIdToken(true)) ?? '')
 			}
 		});
 	}
@@ -40,16 +53,24 @@
 				<h2 class="font-bold text-xl">Connected Players</h2>
 				<div class="h-40">
 					<Border>
-						{#each _users as user}
-							<div class="p-2 font-bold">{user.username}</div>
-						{/each}
+						<div
+							class="grid grid-cols-2 p-2 grid-row-3 xl:grid-cols-3 gap-x-8 gap-y-2 grid-flow-col"
+						>
+							{#each _users as user}
+								<div class="w-full flex justify-between align-center">
+									<div class=" font-bold">{user.username}</div>
+									{#if $isOwner && user.uid != $userStore?.uid}
+										<div>
+											<Button click={() => removeUser(user.uid)}>⛔</Button>
+										</div>
+									{/if}
+								</div>
+							{/each}
+						</div>
 					</Border>
 				</div>
 			</div>
-			<FirebaseChatBox
-				refPath={`games/${$gameId}/publicState/lobby/messages`}
-				username={$user?.username}
-			/>
+			<FirebaseChatBox refPath={`games/${$gameId}/publicState/lobby/messages`} />
 			{#if $isOwner}
 				<div><Button click={startGame}>Start Game</Button></div>
 			{/if}

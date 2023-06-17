@@ -1,5 +1,5 @@
 import type { Game, Phase } from '$lib/game';
-import { validateTokenAsOwner as validateGameRequestAsOwner } from '$lib/server/firebase.js';
+import { validateGameRequestAsOwner as validateGameRequestAsOwner } from '$lib/server/firebase.js';
 import { moveToChat, moveToPrompt, moveToReveal, moveToSelect } from '$lib/server/game';
 import { json } from '@sveltejs/kit';
 import { getDatabase } from 'firebase-admin/database';

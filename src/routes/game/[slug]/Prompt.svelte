@@ -42,6 +42,8 @@
 		if (unsubscribe != null) unsubscribe();
 		if (storeUnsubscribe != null) storeUnsubscribe();
 	});
+
+	// TODO: Disable chatboxes on submit.
 	async function submit() {
 		fetch(`/api/game/${$gameId}/prompt`, {
 			method: 'POST',
@@ -51,6 +53,8 @@
 			}
 		});
 	}
+
+	// TODO: Show who has submitted their descriptions.
 
 	async function nextPhase() {
 		await fetch(`/api/game/${$gameId}/start`, {

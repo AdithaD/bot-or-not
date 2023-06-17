@@ -27,6 +27,7 @@
 		}
 	}
 
+	// TODO: Make timer more visible.
 	let timeRemaining = 60;
 	let serverTimeOffset = 0;
 
@@ -105,6 +106,7 @@
 					<FirebaseChatBox
 						refPath={`games/${$gameId}/userState/${$user?.uid}/chats/${target}/messages`}
 						username={$users?.[target]?.username ?? ''}
+						chatTimeout={10}
 					/>
 					<div class="flex space-x-2">
 						<div class="w-full flex-grow">

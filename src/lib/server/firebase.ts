@@ -39,7 +39,10 @@ export async function validateGameRequestAsUser(request: Request, gameId: string
 	}
 }
 
-export async function validateTokenAsOwner(request: Request, gameId: string): Promise<string> {
+export async function validateGameRequestAsOwner(
+	request: Request,
+	gameId: string
+): Promise<string> {
 	let decoded = await getAuth()
 		.verifyIdToken(request.headers.get('Authorization')?.split(' ')[1] ?? '')
 		.catch(() => {

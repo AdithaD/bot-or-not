@@ -5,10 +5,12 @@
 	import Button from './Button.svelte';
 	import TextInput from './TextInput.svelte';
 
-	export const chatTimeout = 2000;
+	// TODO: Add a way to send messages with the enter key
+	// TODO: Make chat timeout duration visible to the user
+	export let chatTimeout = 2000;
 
 	export let messages: Message[] = [];
-	export let username = '';
+	export let username: String | null = null;
 	export let sendMessageCb: (content: string) => void;
 	export let canSend = true;
 
@@ -25,7 +27,7 @@
 </script>
 
 <div class="space-y-4">
-	<h2 class="font-bold text-xl">Chat to {username}</h2>
+	<h2 class="font-bold text-xl">{username ? `Chat to ${username}` : 'Chat'}</h2>
 	<div class="h-40">
 		<Border>
 			<div class="overflow-y-auto h-full flex flex-col-reverse">

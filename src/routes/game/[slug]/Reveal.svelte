@@ -31,8 +31,10 @@
 		if (storeUnsubscribe != null) storeUnsubscribe();
 	});
 
-	// TODO: Implement play again functionality.
+	// TODO: Implement play again functionality + rounds
 	function playAgain() {}
+
+	// TODO: Back to main menu functionality.
 </script>
 
 <Section>

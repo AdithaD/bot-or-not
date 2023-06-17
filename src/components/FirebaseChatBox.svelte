@@ -6,6 +6,7 @@
 
 	export let refPath: string;
 	export let username: string = '';
+	export let chatTimeout = 10;
 
 	let chatRef = ref(getDatabase(), refPath);
 
@@ -25,4 +26,4 @@
 	}
 </script>
 
-<ChatBox messages={messages ?? []} sendMessageCb={sendMessage} {username} />
+<ChatBox messages={messages ?? []} sendMessageCb={sendMessage} {username} {chatTimeout} />
