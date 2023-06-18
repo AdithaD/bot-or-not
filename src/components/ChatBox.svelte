@@ -35,7 +35,7 @@
 		}
 
 		console.log(`Amount of messages sent: ${amountOfMessagesSent}, max: ${maxMessages}`);
-		if (maxMessages && amountOfMessagesSent < maxMessages) {
+		if (!maxMessages || amountOfMessagesSent < maxMessages) {
 			sendMessageCb(messageInput);
 			canSend = false;
 			setTimeout(() => {

@@ -72,7 +72,11 @@
 						>
 							<div class="h-fit flex-grow w-full">
 								<div>
-									<TextInput bind:value={desiredUsername} placeholder="Enter username" />
+									<TextInput
+										maxLength={15}
+										bind:value={desiredUsername}
+										placeholder="Enter username"
+									/>
 								</div>
 							</div>
 							<div class="w-full lg:w-min">
