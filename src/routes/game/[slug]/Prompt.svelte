@@ -122,26 +122,38 @@
 	<h1 class="font-bold text-2xl mb-8">Prompt 💭</h1>
 	<PhasedContent phase="prompt">
 		<div class="space-y-4">
-			{#if $user}
+			{#if $user && $users && prompt}
 				<div class="font-bold text-xl">Describe the following players:</div>
-				<div class="space-y-8 overflow-y-auto flex-grow">
-					{#each Object.keys(descriptions) as target}
-						<div>
-							<h2 class="font-bold mb-2">{$users?.[target]?.username || 'User'}:</h2>
-							<div class="space-y-4">
-								<Border>
-									<TextAreaInput maxLength={maxPromptLength} bind:value={descriptions[target]} />
-								</Border>
+				<div>
+					<div class="space-y-4 overflow-y-auto flex-grow">
+						{#each Object.keys(descriptions) as target}
+							<div>
+								<h2 class="font-bold mb-2">{$users?.[target]?.username || 'User'}:</h2>
+								<div class="">
+									<Border>
+										<TextAreaInput maxLength={maxPromptLength} bind:value={descriptions[target]} />
+									</Border>
+								</div>
 							</div>
+						{/each}
+					</div>
+					<div class="mt-4">
+						<Button click={submit} disabled={submitted}>Submit</Button>
+					</div>
+				</div>
+				<div class="flex space-x-4 flex-wrap">
+					{#each Object.keys($users) as user}
+						<div class="flex">
+							{user in prompt.submitted && prompt.submitted[user] ? '👍' : '💭'}
+							<div class="font-bold">{$users[user].username}</div>
 						</div>
 					{/each}
 				</div>
 				<div>
-					<Button click={submit} disabled={submitted}>Submit</Button>
-				</div>
-				<div>
 					{#if $isOwner}
-						<Button click={nextPhase} disabled={!allSubmitted}>Next Phase</Button>
+						<div class="">
+							<Button click={nextPhase} disabled={!allSubmitted}>Next Phase</Button>
+						</div>
 					{/if}
 				</div>
 			{/if}
