@@ -1,4 +1,4 @@
-import { env } from '$env/dynamic/private';
+import { ACTIVE_AI, MAX_TOKENS, OPENAI_API_KEY } from '$env/static/private';
 import type { Messages } from '$lib/game';
 import { getDatabase, type Reference } from 'firebase-admin/database';
 import log from 'loglevel';
@@ -15,6 +15,7 @@ const promptMessage = `The user and their good friends are playing a game online
 You are this person. You know the user well. 
 `;
 
+const DEFAULT_MAX_TOKENS = 20;
 export async function aiTurn(
 	messageNumber: number,
 	userChatRef: Reference,
@@ -53,16 +54,16 @@ export async function aiTurn(
 		let body = {
 			model: 'gpt-3.5-turbo',
 			messages: [systemMessage, ...previousChat],
-			max_tokens: 20
+			max_tokens: MAX_TOKENS ?? DEFAULT_MAX_TOKENS
 		};
 		let content: string = '';
-		if (env.ACTIVE_AI && env.ACTIVE_AI == 'TRUE') {
+		if (ACTIVE_AI && ACTIVE_AI == 'TRUE') {
 			try {
 				const completion = await (
 					await fetch('https://api.openai.com/v1/chat/completions', {
 						method: 'POST',
 						headers: {
-							Authorization: `Bearer ${env.OPENAI_API_KEY}`,
+							Authorization: `Bearer ${OPENAI_API_KEY}`,
 							'Content-Type': 'application/json'
 						},
 						body: JSON.stringify(body)
