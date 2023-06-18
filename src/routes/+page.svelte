@@ -5,7 +5,7 @@
 
 <div class="flex-grow flex flex-col justify-center py-8">
 	<main
-		class="w-4/5 xl:w-2/3 self-center flex flex-col xl:flex-row space-y-4 lg:space-y-0 lg:space-x-4 items-center"
+		class="w-4/5 lg:w-2/3 self-center flex flex-col lg:flex-row space-y-4 lg:space-y-0 lg:space-x-4 items-center"
 	>
 		<Pregame />
 		<Section>
