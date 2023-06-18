@@ -1,16 +1,16 @@
 <script lang="ts">
 	import ToggleButton from 'components/ToggleButton.svelte';
 
+	import { PUBLIC_MAX_MESSAGE_LENGTH } from '$env/static/public';
 	import type { ChatData } from '$lib/game';
 	import { gameId, phase, user, users } from '$lib/stores';
-	import { get, getDatabase, onValue, ref, set, update } from 'firebase/database';
-	import { onDestroy } from 'svelte';
+	import { addToast } from '$lib/toasts';
+	import Button from 'components/Button.svelte';
 	import FirebaseChatBox from 'components/FirebaseChatBox.svelte';
 	import PhasedContent from 'components/PhasedContent.svelte';
 	import Section from 'components/Section.svelte';
-	import Button from 'components/Button.svelte';
 	import { getAuth } from 'firebase/auth';
-	import { addToast } from '$lib/toasts';
+	import { getDatabase, onValue, ref } from 'firebase/database';
 
 	let userChats: ChatData | null = null;
 
@@ -31,6 +31,20 @@
 	// TODO: Make timer more visible.
 	let timeRemaining = 15;
 	let serverTimeOffset = 0;
+
+	let maxMessageLength: number;
+	try {
+		maxMessageLength = parseInt(PUBLIC_MAX_MESSAGE_LENGTH);
+	} catch (error) {
+		maxMessageLength = 1000;
+	}
+
+	let maxMessages: number;
+	try {
+		maxMessages = parseInt(PUBLIC_MAX_MESSAGES);
+	} catch (error) {
+		maxMessages = 4;
+	}
 
 	onValue(ref(getDatabase(), '.info/serverTimeOffset'), (snapshot) => {
 		serverTimeOffset = snapshot.val();
@@ -113,10 +127,17 @@
 		<div class="lg:grid lg:grid-cols-2 space-y-6 overflow-y-auto flex-grow pb-2">
 			{#each targets as target}
 				<div class="space-y-2 flex flex-col h-full">
+					#{}
 					<FirebaseChatBox
 						refPath={`games/${$gameId}/userState/${$user?.uid}/chats/${target}/messages`}
 						username={$users?.[target]?.username ?? ''}
-						chatTimeout={10}
+						chatBoxConfig={{
+							chatTimeout: 15,
+							maxMessages: maxMessages,
+							maxMessageLength: maxMessageLength
+						}}
+						canSend={!disabled?.[target]}
+						
 					/>
 					<div class="flex space-x-2">
 						<div class="w-full flex-grow">

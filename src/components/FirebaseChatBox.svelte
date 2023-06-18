@@ -6,7 +6,13 @@
 
 	export let refPath: string;
 	export let username: string = '';
-	export let chatTimeout = 10;
+	export let canSend = true;
+
+	export let chatBoxConfig = {
+		chatTimeout: 10,
+		maxMessages: 4,
+		maxMessageLength: 500
+	};
 
 	let chatRef = ref(getDatabase(), refPath);
 
@@ -26,4 +32,10 @@
 	}
 </script>
 
-<ChatBox messages={messages ?? []} sendMessageCb={sendMessage} {username} {chatTimeout} />
+<ChatBox
+	messages={messages ?? []}
+	sendMessageCb={sendMessage}
+	{username}
+	{...chatBoxConfig}
+	{canSend}
+/>

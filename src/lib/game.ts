@@ -11,6 +11,7 @@ export type JoinRequestBody = {
 };
 export type Game = {
 	id: string;
+	config: { maxMessageLength?: number };
 	owner: string | null;
 	users: { [uid: string]: User };
 
@@ -104,6 +105,7 @@ export function createNewGame(): Game {
 
 	return {
 		id,
+		config: {},
 		users: {},
 		owner: null,
 		publicState: {
