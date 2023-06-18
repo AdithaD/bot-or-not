@@ -57,13 +57,11 @@
 		<div class="flex flex-col w-full space-y-4">
 			<div>
 				<h2 class="font-bold text-xl">Connected Players</h2>
-				<div class="h-40">
+				<div class="h-[12rem]">
 					<Border>
-						<div
-							class="grid grid-cols-2 p-2 grid-row-3 xl:grid-cols-3 gap-x-8 gap-y-2 grid-flow-col"
-						>
+						<div class="grid grid-cols-2 p-2 grid-rows-3 xl:grid-cols-3 gap-x-4 gap-y-2">
 							{#each _users as user}
-								<div class="w-full flex justify-between align-center">
+								<div class="w-full flex align-center space-x-4 items-center">
 									<div class=" font-bold">{user.username}</div>
 									{#if $isOwner && user.uid != $userStore?.uid}
 										<div>

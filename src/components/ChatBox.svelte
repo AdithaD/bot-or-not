@@ -17,14 +17,16 @@
 	export let sendMessageCb: (content: string) => void;
 	export let canSend = true;
 
+	export let sendingMessage = false;
+
 	let amountOfMessagesSent = 0;
 
 	let messageInput = '';
 
 	$: disabled =
-		messageInput.length == 0 ||
 		(maxMessageLength != null && messageInput.length > maxMessageLength) ||
-		(maxMessages != null && amountOfMessagesSent >= maxMessages);
+		(maxMessages != null && amountOfMessagesSent >= maxMessages) ||
+		sendingMessage;
 
 	function sendMessage() {
 		if (messageInput.length === 0) return;
@@ -37,9 +39,9 @@
 		console.log(`Amount of messages sent: ${amountOfMessagesSent}, max: ${maxMessages}`);
 		if (!maxMessages || amountOfMessagesSent < maxMessages) {
 			sendMessageCb(messageInput);
-			canSend = false;
+			sendingMessage = true;
 			setTimeout(() => {
-				canSend = true;
+				sendingMessage = false;
 			}, chatTimeout);
 			messageInput = '';
 			amountOfMessagesSent += 1;

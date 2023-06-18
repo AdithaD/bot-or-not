@@ -9,7 +9,7 @@
 	export let canSend = true;
 
 	export let chatBoxConfig = {
-		chatTimeout: 10,
+		chatTimeout: 2,
 		maxMessages: null,
 		maxMessageLength: 500
 	} as {
