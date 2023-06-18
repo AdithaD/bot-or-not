@@ -124,7 +124,9 @@
 		</h1>
 	</div>
 	<PhasedContent phase="chat">
-		<div class="lg:grid lg:grid-cols-2 space-y-6 overflow-y-auto flex-grow pb-2">
+		<div
+			class="lg:grid lg:grid-cols-2 lg:gap-x-4 space-y-6 lg:space-y-0 overflow-y-auto flex-grow pb-2"
+		>
 			{#each targets as target}
 				<div class="space-y-2 flex flex-col h-full">
 					<FirebaseChatBox

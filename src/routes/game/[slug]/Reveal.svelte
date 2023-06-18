@@ -60,18 +60,6 @@
 							</div>
 						</div>
 					{/each}
-					{#each Object.keys(revealData) as uid}
-						<div class="w-full shadow-xl rounded-xl p-4 border-2 border-black">
-							<h2 class="font-bold text-2xl mb-4">{$users[uid]?.username ?? 'Unknown User'}</h2>
-							<div class="flex flex-col space-y-4">
-								{#each Object.keys(revealData[uid]) as target}
-									{#if revealData[uid][target] != null && $users[target]}
-										<RevealDataBlock revealData={revealData[uid][target]} target={$users[target]} />
-									{/if}
-								{/each}
-							</div>
-						</div>
-					{/each}
 				</div>
 				<div class="text-xl h-20 flex space-x-4">
 					<Button click={playAgain}>Start another trial! 🔬</Button>
