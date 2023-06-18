@@ -1,3 +1,3 @@
 import '$lib/client';
 
-export const ssr = false;
+export const prerender = true;

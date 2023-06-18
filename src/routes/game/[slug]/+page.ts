@@ -3,6 +3,9 @@ import { get } from 'svelte/store';
 import type { PageLoad } from './$types';
 import { error } from '@sveltejs/kit';
 import { getAuth, signInAnonymously } from 'firebase/auth';
+
+export const ssr = false;
+
 export const load = (async ({ params, fetch }) => {
 	let { slug } = params;
 

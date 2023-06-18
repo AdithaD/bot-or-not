@@ -57,7 +57,7 @@
 		<div class="flex flex-col w-full space-y-4">
 			<div>
 				<h2 class="font-bold text-xl">Connected Players</h2>
-				<div class="h-[12rem]">
+				<div class="h-[8rem]">
 					<Border>
 						<div class="grid grid-cols-2 p-2 grid-rows-3 xl:grid-cols-3 gap-x-4 gap-y-2">
 							{#each _users as user}

@@ -67,7 +67,7 @@
 	{#if canSend}
 		<div class="flex space-x-2 h-16">
 			<div class="flex-grow h-full">
-				<TextInput bind:value={messageInput} placeholder="Enter message" />
+				<TextInput bind:value={messageInput} placeholder="Enter message" onEnter={sendMessage} />
 			</div>
 			<div class="h-full flex-grow">
 				<Button {disabled} click={sendMessage}
