@@ -5,13 +5,12 @@
 	export let phase: Phase;
 </script>
 
-<div class="h-full w-full flex items-stretch justify-center flex-col">
+<div class="h-full w-full flex items-stretch justify-center flex-col p-4">
 	{#if $phaseStore == phase}
 		<slot />
 	{:else if phaseOrdering.indexOf($phaseStore ?? '') > phaseOrdering.indexOf(phase)}
 		<div class="text-6xl self-center text-center space-y-2">
 			<p>✔</p>
-			<p class="text-2xl font-bold">Phase complete.</p>
 		</div>
 	{:else}
 		<div class="text-6xl self-center text-center space-y-2">

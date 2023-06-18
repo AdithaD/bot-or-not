@@ -42,20 +42,24 @@
 
 <div class="flex flex-col flex-grow">
 	{#if $user}
-		<main class="p-8 lg:grid lg:grid-rows-4 lg:gap-8 w-full flex-grow space-y-8 lg:space-y-0">
-			<div class="col-span-3">
-				<Lobby />
+		<main class="p-8 flex-grow space-y-8">
+			<div class="flex flex-grow items-stretch space-x-4">
+				<div class="w-1/2">
+					<Lobby />
+				</div>
+				<div class="w-1/2">
+					<Prompt />
+				</div>
 			</div>
-			<div class="col-span-2">
-				<Prompt />
+			<div class="flex flex-grow space-x-4">
+				<div class="w-1/3">
+					<Select />
+				</div>
+				<div class="w-2/3">
+					<Chat />
+				</div>
 			</div>
-			<div>
-				<Select />
-			</div>
-			<div class="col-span-3">
-				<Chat />
-			</div>
-			<div class="col-span-3 row-span-2">
+			<div class=" flex-grow">
 				<Reveal />
 			</div>
 		</main>
