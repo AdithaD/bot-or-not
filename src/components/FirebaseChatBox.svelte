@@ -12,6 +12,10 @@
 		chatTimeout: 10,
 		maxMessages: null,
 		maxMessageLength: 500
+	} as {
+		chatTimeout: number;
+		maxMessages: number | null;
+		maxMessageLength: number;
 	};
 
 	let chatRef = ref(getDatabase(), refPath);

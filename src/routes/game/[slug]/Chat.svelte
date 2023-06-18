@@ -1,7 +1,7 @@
 <script lang="ts">
 	import ToggleButton from 'components/ToggleButton.svelte';
 
-	import { PUBLIC_MAX_MESSAGE_LENGTH } from '$env/static/public';
+	import { PUBLIC_MAX_MESSAGE_LENGTH, PUBLIC_MAX_MESSAGES } from '$env/static/public';
 	import type { ChatData } from '$lib/game';
 	import { gameId, phase, user, users } from '$lib/stores';
 	import { addToast } from '$lib/toasts';

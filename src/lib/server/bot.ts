@@ -1,4 +1,4 @@
-import { ACTIVE_AI, MAX_TOKENS, OPENAI_API_KEY } from '$env/static/private';
+import { MAX_TOKENS, ACTIVE_AI, OPENAI_API_KEY } from '$env/static/private';
 import type { Messages } from '$lib/game';
 import { getDatabase, type Reference } from 'firebase-admin/database';
 import log from 'loglevel';
