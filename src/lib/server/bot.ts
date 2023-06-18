@@ -54,23 +54,28 @@ export async function aiTurn(
 		let body = {
 			model: 'gpt-3.5-turbo',
 			messages: [systemMessage, ...previousChat],
-			max_tokens: MAX_TOKENS ?? DEFAULT_MAX_TOKENS
+			max_tokens: parseInt(MAX_TOKENS) ?? DEFAULT_MAX_TOKENS
 		};
 		let content: string = '';
 		if (ACTIVE_AI && ACTIVE_AI == 'TRUE') {
 			try {
-				const completion = await (
-					await fetch('https://api.openai.com/v1/chat/completions', {
-						method: 'POST',
-						headers: {
-							Authorization: `Bearer ${OPENAI_API_KEY}`,
-							'Content-Type': 'application/json'
-						},
-						body: JSON.stringify(body)
+				await fetch('https://api.openai.com/v1/chat/completions', {
+					method: 'POST',
+					headers: {
+						Authorization: `Bearer ${OPENAI_API_KEY}`,
+						'Content-Type': 'application/json'
+					},
+					body: JSON.stringify(body)
+				})
+					.then(async (res) => {
+						let resBody = await res.json();
+						content = resBody.choices[0].message.content;
+						return body;
 					})
-				).json();
+					.catch((e) => {
+						console.error(e);
+					});
 
-				content = completion.choices[0].message.content;
 				//const content = 'I am a chatbox';
 			} catch (e) {
 				console.error(e);
