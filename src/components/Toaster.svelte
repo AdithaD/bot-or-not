@@ -15,7 +15,7 @@
 	} as { [key: string]: string };
 </script>
 
-<div class="h-screen w-screen absolute pointer-events-none">
+<div class="fixed top-0 pointer-events-none h-10">
 	<div class="">
 		{#each $toasts as toast}
 			<div

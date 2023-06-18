@@ -5,7 +5,7 @@
 </script>
 
 <div class="relative">
-	<input bind:value class="w-full h-full p-4 border-2 rounded-lg" type="text" {placeholder} />
+	<textarea maxlength={maxLength} class="w-full h-full p-4 rounded-lg" {placeholder} bind:value />
 	{#if maxLength != null}
 		<p
 			class="absolute bottom-1 right-1 text-gray-400 {value.length > maxLength

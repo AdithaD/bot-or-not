@@ -9,6 +9,8 @@
 	import PhasedContent from 'components/PhasedContent.svelte';
 	import Section from 'components/Section.svelte';
 	import { addToast } from '$lib/toasts';
+	import TextAreaInput from 'components/TextAreaInput.svelte';
+	import { PUBLIC_MAX_PROMPT_LENGTH } from '$env/static/public';
 
 	let unsubscribe: Function | null = null;
 	let storeUnsubscribe: Function | null = null;
@@ -38,6 +40,11 @@
 			});
 		}
 	}
+
+	let maxPromptLength = 1000;
+	try {
+		maxPromptLength = parseInt(PUBLIC_MAX_PROMPT_LENGTH);
+	} catch (error) {}
 
 	onDestroy(() => {
 		if (unsubscribe != null) unsubscribe();
@@ -123,7 +130,7 @@
 							<h2 class="font-bold mb-2">{$users?.[target]?.username || 'User'}:</h2>
 							<div class="space-y-4">
 								<Border>
-									<textarea class="w-full p-4 rounded-lg" bind:value={descriptions[target]} />
+									<TextAreaInput maxLength={maxPromptLength} bind:value={descriptions[target]} />
 								</Border>
 							</div>
 						</div>

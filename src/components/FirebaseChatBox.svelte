@@ -10,7 +10,7 @@
 
 	export let chatBoxConfig = {
 		chatTimeout: 10,
-		maxMessages: 4,
+		maxMessages: null,
 		maxMessageLength: 500
 	};
 

@@ -9,8 +9,8 @@
 	// TODO: Add a way to send messages with the enter key
 	// TODO: Make chat timeout duration visible to the user
 	export let chatTimeout = 2000;
-	export let maxMessages = 1000;
-	export let maxMessageLength = 400;
+	export let maxMessages: number | null = 1000;
+	export let maxMessageLength: number | null = 400;
 
 	export let messages: Message[] = [];
 	export let username: String | null = null;
@@ -22,19 +22,20 @@
 	let messageInput = '';
 
 	$: disabled =
-		messageInput.length === 0 ||
-		messageInput.length > maxMessageLength ||
-		amountOfMessagesSent >= maxMessages;
+		messageInput.length == 0 ||
+		(maxMessageLength != null && messageInput.length > maxMessageLength) ||
+		(maxMessages != null && amountOfMessagesSent >= maxMessages);
 
 	function sendMessage() {
 		if (messageInput.length === 0) return;
-		if (messageInput.length > maxMessageLength) {
+
+		if (maxMessageLength && messageInput.length > maxMessageLength) {
 			addToast(`Message too long 😅, max length is ${maxMessageLength} ❗`, 'error');
 			return;
 		}
 
 		console.log(`Amount of messages sent: ${amountOfMessagesSent}, max: ${maxMessages}`);
-		if (amountOfMessagesSent < maxMessages) {
+		if (maxMessages && amountOfMessagesSent < maxMessages) {
 			sendMessageCb(messageInput);
 			canSend = false;
 			setTimeout(() => {
@@ -67,7 +68,19 @@
 				<TextInput bind:value={messageInput} placeholder="Enter message" />
 			</div>
 			<div class="h-full flex-grow">
-				<Button {disabled} click={sendMessage}>Send</Button>
+				<Button {disabled} click={sendMessage}
+					><div class="flex w-full justify-between items-center">
+						{#if maxMessages != null}
+							<div />
+						{/if}
+						<p class="align-middle text-center h-full w-full">Send</p>
+						{#if maxMessages != null}
+							<div class="border-2 border-black rounded-lg p-2">
+								{amountOfMessagesSent} / {maxMessages}
+							</div>
+						{/if}
+					</div></Button
+				>
 			</div>
 		</div>
 	{/if}

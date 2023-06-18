@@ -127,7 +127,6 @@
 		<div class="lg:grid lg:grid-cols-2 space-y-6 overflow-y-auto flex-grow pb-2">
 			{#each targets as target}
 				<div class="space-y-2 flex flex-col h-full">
-					#{}
 					<FirebaseChatBox
 						refPath={`games/${$gameId}/userState/${$user?.uid}/chats/${target}/messages`}
 						username={$users?.[target]?.username ?? ''}
@@ -137,7 +136,6 @@
 							maxMessageLength: maxMessageLength
 						}}
 						canSend={!disabled?.[target]}
-						
 					/>
 					<div class="flex space-x-2">
 						<div class="w-full flex-grow">

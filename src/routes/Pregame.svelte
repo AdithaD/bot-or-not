@@ -14,9 +14,10 @@
 	let desiredUsername = '';
 
 	async function createGame() {
-		addToast('Starting game...', 'info');
-		if (!desiredUsername || desiredUsername.length < 1) return alert('Please enter a username');
+		if (!desiredUsername || desiredUsername.length < 1)
+			return addToast('Please enter a username', 'error');
 
+		addToast('Starting experiment... 👨‍🔬', 'info');
 		fetch('/api/new', { method: 'POST' }).then(async (res) => {
 			let body = await res.json();
 			let id = body.id;
@@ -46,8 +47,8 @@
 		if (validateUsername(desiredUsername)) {
 			let creds = await signInAnonymously(getAuth());
 
-			if (gameIDInput.length < 1) return alert('Please enter a game ID');
-			if (gameIDInput.length != 36) return alert('Invalid game ID');
+			if (gameIDInput.length < 1) return addToast('Please enter a game ID', 'error');
+			if (gameIDInput.length != 36) return addToast('Invalid game ID', 'error');
 
 			let body: JoinRequestBody = {
 				user: {
@@ -71,14 +72,14 @@
 	<div class="space-y-8">
 		<div>
 			<h2 class="font-bold text-xl mb-4">Username</h2>
-			<TextInput bind:value={desiredUsername} placeholder="Enter username" />
+			<TextInput maxLength={15} bind:value={desiredUsername} placeholder="Enter username" />
 		</div>
 		<div class="border-2 border-green-600 rounded-xl" />
 		<div class="space-y-4">
 			<Button click={createGame}>Start Experiment</Button>
 			<div class="text-2xl font-bold text-center">or</div>
 			<div class="space-y-2">
-				<TextInput bind:value={gameIDInput} placeholder="Enter Game ID" />
+				<TextInput maxLength={null} bind:value={gameIDInput} placeholder="Enter Game ID" />
 				<Button click={joinGame}>Join Experiment</Button>
 			</div>
 		</div>
