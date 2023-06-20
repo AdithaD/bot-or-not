@@ -3,13 +3,15 @@ import type { App } from 'firebase-admin/app';
 import { Reference } from 'firebase-admin/database';
 import log from 'loglevel';
 import { ChatCompletionRequestMessage } from 'openai';
-import admin_key from '../secrets/admin_key.json';
 import type { Message } from '../src/lib/game';
 log.setDefaultLevel(log.levels.TRACE);
 import dotenv from 'dotenv';
 dotenv.config({ path: '../.env' });
 
-const { MAX_TOKENS, ACTIVE_AI, OPENAI_API_KEY, PUBLIC_MAX_MESSAGES } = process.env;
+const { MAX_TOKENS, FIREBASE_ADMIN_KEY, ACTIVE_AI, OPENAI_API_KEY, PUBLIC_MAX_MESSAGES } =
+	process.env;
+
+if (!FIREBASE_ADMIN_KEY) throw new Error('No admin key provided');
 
 var maxMessagesPerPlayerPerChat = parseInt(PUBLIC_MAX_MESSAGES ?? '4') ?? 4;
 log.debug(`Max messages per player per chat: ${maxMessagesPerPlayerPerChat}`);
@@ -21,7 +23,7 @@ var app: App | null = null;
 try {
 	log.info('🔥 Initializing Firebase SDK on Server');
 	app = admin.initializeApp({
-		credential: admin.credential.cert(admin_key as any),
+		credential: admin.credential.cert(JSON.parse(FIREBASE_ADMIN_KEY) as any),
 		databaseURL: 'https://bot-or-not-f60ab-default-rtdb.firebaseio.com'
 	});
 } catch (e) {

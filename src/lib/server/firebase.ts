@@ -1,14 +1,17 @@
 // Import the functions you need from the SDKs you need
 import admin from 'firebase-admin';
-import admin_key from './../../../secrets/admin_key.json';
 import { getDatabase } from 'firebase-admin/database';
 import { getAuth } from 'firebase-admin/auth';
 import { json } from '@sveltejs/kit';
+import { FIREBASE_ADMIN_KEY } from '$env/static/private';
+
+if (!FIREBASE_ADMIN_KEY) throw 'No firebase admin key found';
+
 var app = null;
 try {
 	console.log('🔥 Initializing Firebase SDK on Server');
 	app = admin.initializeApp({
-		credential: admin.credential.cert(admin_key as any),
+		credential: admin.credential.cert(JSON.parse(FIREBASE_ADMIN_KEY) as any),
 		databaseURL: 'https://bot-or-not-f60ab-default-rtdb.firebaseio.com'
 	});
 } catch (e) {
