@@ -29,6 +29,7 @@
 		sendingMessage;
 
 	function sendMessage() {
+		if (!canSend) return;
 		if (messageInput.length === 0) return;
 
 		if (maxMessageLength && messageInput.length > maxMessageLength) {

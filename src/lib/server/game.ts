@@ -16,7 +16,6 @@ import type {
 
 import { json } from '@sveltejs/kit';
 import { ServerValue, getDatabase, type Database } from 'firebase-admin/database';
-import { aiTurn } from './bot';
 import log from 'loglevel';
 import { env } from '$env/dynamic/private';
 const chatTime = env.CHAT_TIME ?? 60;
@@ -127,9 +126,7 @@ export async function moveToChat(game: Game, database: Database) {
 						createP2PChatBridge(uid, target);
 						types[uid][target] = 'P2P';
 					} else {
-						// Are they not talking back? (H2AI)
-						createP2AIChatBridge(uid, target);
-
+						// This AI side will be handled by the bot server automatically.
 						types[uid][target] = 'P2AI';
 					}
 				}
@@ -171,14 +168,6 @@ export async function moveToChat(game: Game, database: Database) {
 				u2ToU1.push(newMessage);
 			}
 		});
-	}
-
-	function createP2AIChatBridge(uid: string, aiUid: string) {
-		let userChatRef = getDatabase().ref(
-			`games/${game.id}/userState/${uid}/chats/${aiUid}/messages`
-		);
-
-		aiTurn(-1, userChatRef, uid, aiUid, game.id);
 	}
 }
 
@@ -242,6 +231,12 @@ export async function moveToReveal(gameId: string, database: Database) {
 		updates[`games/${gameId}/publicState/phase`] = 'reveal';
 
 		await database.ref().update(updates);
+		await getDatabase()
+			.ref(`active/${gameId}`)
+			.remove()
+			.then(() => {
+				log.info(`GAME ${gameId}: Removed from active games.`);
+			});
 	} catch (error) {
 		log.error(error);
 		return json({ error: 'Failed to update database' }, { status: 500 });
