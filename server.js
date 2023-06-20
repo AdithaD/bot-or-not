@@ -12,6 +12,9 @@ const __dirname = path.dirname(__filename);
 
 import('./bot-server/build/bot.cjs');
 
+const PORT = 80;
+const SSLPORT = 443;
+
 const app = express();
 
 const httpServer = http.createServer(app);
@@ -25,9 +28,6 @@ if (process.env.SSL && process.env.SSL == 'TRUE') {
 		console.log('HTTPS Server is running on: https://localhost:%s', SSLPORT);
 	});
 }
-
-const PORT = 80;
-const SSLPORT = 443;
 
 httpServer.listen(PORT, function () {
 	console.log('HTTP Server is running on: http://localhost:%s', PORT);
