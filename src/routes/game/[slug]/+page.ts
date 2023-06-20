@@ -1,8 +1,6 @@
-import { user } from '$lib/stores';
-import { get } from 'svelte/store';
-import type { PageLoad } from './$types';
 import { error } from '@sveltejs/kit';
 import { getAuth, signInAnonymously } from 'firebase/auth';
+import type { PageLoad } from './$types';
 
 export const prerender = false;
 
@@ -32,10 +30,10 @@ export const load = (async ({ params, fetch }) => {
 					user: null
 				};
 			} else {
-				error(404, 'Game not found');
+				throw error(404, 'Game not found');
 			}
 		}
 	} catch (e) {
-		error(404, 'Game not found');
+		throw error(404, 'Game not found');
 	}
 }) satisfies PageLoad;

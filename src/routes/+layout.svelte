@@ -8,7 +8,7 @@
 		class="shadow-md border-b-4 border-primary bg-green-300 w-full p-4 text-center flex justify-between relative"
 	>
 		<div />
-		<h1 class="font-bold text-2xl">Bot or Not</h1>
+		<h1 class="font-bold text-2xl">Buddy or Bot</h1>
 		<div />
 	</header>
 	<div class="flex-grow flex flex-col">
@@ -32,3 +32,6 @@
 	</footer>
 	<Toaster />
 </div>
+<svelte:head>
+	<title>Buddy or Bot!</title>
+</svelte:head>
