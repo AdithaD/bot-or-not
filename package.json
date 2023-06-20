@@ -3,9 +3,11 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
+    "run": "npm run build && npm run build-bot && node -r dotenv/config ./server.js",
     "dev": "vite dev",
     "build": "vite build",
     "preview": "vite preview",
+    "build-bot": "npx esbuild --outfile=./bot-server/build/bot.cjs --bundle ./bot-server/index.ts --platform=node --target=node16",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
     "lint": "prettier --plugin-search-dir . --check . && eslint .",
