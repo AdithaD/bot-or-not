@@ -19,7 +19,7 @@ console.log('process.env.SSL', process.env.SSL);
 if (process.env.SSL && process.env.SSL == 'TRUE') {
 	const privateKey = fs.readFileSync(path.join(__dirname, 'ssl/privkey.pem'), 'utf8');
 	const certificate = fs.readFileSync(path.join(__dirname, 'ssl/fullchain.pem'), 'utf8');
-	credentials = { key: privateKey, cert: certificate };
+	const credentials = { key: privateKey, cert: certificate };
 	const httpsServer = https.createServer(credentials, app);
 	httpsServer.listen(SSLPORT, function () {
 		console.log('HTTPS Server is running on: https://localhost:%s', SSLPORT);
