@@ -68,7 +68,12 @@
 </script>
 
 <Section>
-	<h1 class="font-bold text-2xl mb-8 h-full">Experiment Control 🧪</h1>
+	<div class="flex w-full justify-between items-start">
+		<h1 class="font-bold text-2xl mb-8 h-full">Experiment Control 🧪</h1>
+		<div>
+			<a href="/tutorial"><Button>Instructions 🧐</Button></a>
+		</div>
+	</div>
 	<div class="space-y-8">
 		<div>
 			<h2 class="font-bold text-xl mb-4">Username</h2>
